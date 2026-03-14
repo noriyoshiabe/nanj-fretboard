@@ -12,11 +12,13 @@ export default class Key {
 
     this.pitch = pitch;
 
-    this.el.addEventListener("mousedown", this.onPressed.bind(this));
-    this.el.addEventListener("touchstart", this.onPressed.bind(this));
-
-    this.el.addEventListener("mouseup", this.onReleased.bind(this));
-    this.el.addEventListener("touchend", this.onReleased.bind(this));
+    if ("ontouchstart" in document.documentElement) {
+      this.el.addEventListener("touchstart", this.onPressed.bind(this));
+      this.el.addEventListener("touchend", this.onReleased.bind(this));
+    } else {
+      this.el.addEventListener("mousedown", this.onPressed.bind(this));
+      this.el.addEventListener("mouseup", this.onReleased.bind(this));
+    }
   }
 
   onPressed() {
