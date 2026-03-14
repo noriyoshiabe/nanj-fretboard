@@ -27,32 +27,30 @@
   }
 
   &.--angry {
-    animation-duration: 0.4s;
-    animation-name: zoom;
-
     span {
       background-image: url(./assets/angry.png);
+      animation-duration: 0.4s;
+      animation-name: zoom;
     }
   }
 
   @keyframes fade {
     0.00% {
-      translate: 0 0;
+      translate: -50% -50%;
       opacity: 1;
     }
     100.00% {
-      translate: 0 -50%;
+      translate: -50% -100%;
       opacity: 0;
     }
   }
 
   &.--happy {
-    animation-duration: 0.5s;
-    animation-name: fade;
-    animation-fill-mode: forwards;
-
     span {
       background-image: url(./assets/happy.png);
+      animation-duration: 0.5s;
+      animation-name: fade;
+      animation-fill-mode: forwards;
     }
   }
 }

@@ -1,0 +1,28 @@
+.MainView {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    width: calc(100vw - 20px);
+    padding: 0 10px;
+
+    .NotePad {
+      margin-top: 50px;
+    }
+
+    .NanJ {
+      position: absolute;
+      width: 2.5%;
+      --fret: 3;
+      --string: 6;
+      left: calc((var(--fret) + 0.5) * 4%);
+      top: calc((var(--string) - 1) * 20%);
+      translate: -50% -50%;
+    }
+  }
+}

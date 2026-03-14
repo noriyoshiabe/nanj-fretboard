@@ -5,7 +5,7 @@ import Key from "./Key";
 
 export default class NotePad {
   el: HTMLElement;
-  onClickKey?: (pitch: Pitch) => void;
+  onClick?: (pitch: Pitch) => void;
 
   constructor() {
     this.el = document.createElement("div") as HTMLElement;
@@ -16,7 +16,7 @@ export default class NotePad {
       this.el.appendChild(key.el);
 
       key.onClick = (key: Key) => {
-        this.onClickKey?.(key.pitch);
+        this.onClick?.(key.pitch);
       };
 
       key.el.dataset.pitch = pitch;
