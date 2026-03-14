@@ -14,7 +14,7 @@ export default class Fretboard {
       this.el.appendChild(_string);
     }
 
-    for (let i = 1; i <= 25; i++) {
+    for (let i = 1; i <= 13; i++) {
       const fret = document.createElement("span") as HTMLElement;
       fret.classList.add("fret");
       fret.style.setProperty("--number", i.toString());
@@ -25,17 +25,12 @@ export default class Fretboard {
       case 5:
       case 7:
       case 9:
-      case 15:
-      case 17:
-      case 19:
-      case 21:
         var dot = document.createElement("span") as HTMLElement;
         dot.classList.add("dot");
         dot.style.setProperty("--fret", i.toString());
         this.el.appendChild(dot);
         break;
       case 12:
-      case 24:
         var dot = document.createElement("span") as HTMLElement;
         dot.classList.add("dot");
         dot.classList.add("--top");
