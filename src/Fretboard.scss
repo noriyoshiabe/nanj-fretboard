@@ -7,7 +7,7 @@
   .string {
     position: absolute;
     display: block;
-    left: calc(100 / 13 * 1%);
+    left: 0;
     right: 0;
     height: 1px;
     background-color: lightgray;
@@ -25,7 +25,12 @@
     background-color: lightgray;
 
     --number: 0;
-    left: calc(100 / 13 * var(--number) * 1%);
+    left: calc(100 / 13 * (var(--number) + 1) * 1%);
+
+    &.--zero {
+      width: 2px;
+      background-color: gray;
+    }
   }
 
   .dot {

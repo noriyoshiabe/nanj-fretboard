@@ -14,13 +14,16 @@ export default class Fretboard {
       this.el.appendChild(_string);
     }
 
-    for (let i = 1; i <= 13; i++) {
+    for (let i = 0; i <= 12; i++) {
       const fret = document.createElement("span") as HTMLElement;
       fret.classList.add("fret");
       fret.style.setProperty("--number", i.toString());
       this.el.appendChild(fret);
       
       switch (i) {
+      case 0:
+        fret.classList.add("--zero");
+        break;
       case 3:
       case 5:
       case 7:

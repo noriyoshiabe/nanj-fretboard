@@ -24,11 +24,17 @@ export default class NanJ {
   }
 
   set state(state: NanJState) {
+    const needDelay = this._state == state;
     this._state = state;
     this.el.classList.remove("--normal");
     this.el.classList.remove("--angry");
     this.el.classList.remove("--happy");
-    this.el.classList.add("--" + state);
+
+    if (needDelay) {
+      setTimeout(() => this.el.classList.add("--" + state));
+    } else {
+      this.el.classList.add("--" + state);
+    }
   }
 
   get state() {
