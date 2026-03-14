@@ -11,6 +11,7 @@ import type { QuestionItem } from "./Question";
 export default class MainViewController {
   el: HTMLElement;
   content = {} as HTMLElement;
+  accidental = {} as HTMLElement;
   fretboard: Fretboard;
   nanJ = {} as NanJ;
   question = new Question();
@@ -28,6 +29,7 @@ export default class MainViewController {
     this.content.appendChild(notePad.el);
 
     this.supplyQuestion();
+    this.updateView();
   }
 
   onNotePadClick(pitch: Pitch) {
@@ -53,5 +55,18 @@ export default class MainViewController {
     this.nanJ.onFadeOut = this.onNanJFadeout.bind(this);
 
     this.fretboard.el.appendChild(this.nanJ.el);
+  }
+
+  toggleAccidental() {
+    this.question.accidental = !this.question.accidental;
+    this.updateView();
+  }
+
+  updateView() {
+    if (this.question.accidental) {
+      this.accidental.classList.remove("--disable");
+    } else {
+      this.accidental.classList.add("--disable");
+    }
   }
 }

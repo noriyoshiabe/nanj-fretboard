@@ -10,7 +10,8 @@ export type QuestionItem = {
 
 export default class Question {
   items: QuestionItem[];
-  lotItems: QuestionItem[];
+  lotItems: QuestionItem[] = [];
+  _accidental = false;
 
   constructor() {
     this.items = [];
@@ -48,7 +49,7 @@ export default class Question {
       }
     }
 
-    this.lotItems = shuffle(this.items);
+    this.resetItems();
   }
 
   lot(): QuestionItem {
@@ -56,5 +57,22 @@ export default class Question {
       this.lotItems = shuffle(this.items); 
     }
     return this.lotItems.shift()!;
+  }
+
+  resetItems() {
+    this.lotItems = shuffle(this.items);
+
+    if (!this._accidental) {
+      this.lotItems = this.lotItems.filter((item) => !item.pitch.includes("#"));
+    }
+  }
+
+  set accidental(accidental: boolean) {
+    this._accidental = accidental;
+    this.resetItems();
+  }
+
+  get accidental() {
+    return this._accidental;
   }
 }
