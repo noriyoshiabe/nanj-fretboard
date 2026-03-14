@@ -1,0 +1,30 @@
+.NotePad {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 14 / 3;
+
+  .Key {
+    position: absolute;
+    bottom: 0;
+    translate: -50% 0;
+
+    &.--black {
+      top: 0;
+    }
+
+    &[data-pitch="C"] { left: calc(100 / 14 * 1 * 1%); }
+    &[data-pitch="D"] { left: calc(100 / 14 * 3 * 1%); }
+    &[data-pitch="E"] { left: calc(100 / 14 * 5 * 1%); }
+    &[data-pitch="F"] { left: calc(100 / 14 * 7 * 1%); }
+    &[data-pitch="G"] { left: calc(100 / 14 * 9 * 1%); }
+    &[data-pitch="A"] { left: calc(100 / 14 * 11 * 1%); }
+    &[data-pitch="B"] { left: calc(100 / 14 * 13 * 1%); }
+
+    &[data-pitch="C#"] { left: calc(100 / 14 * 2 * 1%); }
+    &[data-pitch="D#"] { left: calc(100 / 14 * 4 * 1%); }
+
+    &[data-pitch="F#"] { left: calc(100 / 14 * 8 * 1%); }
+    &[data-pitch="G#"] { left: calc(100 / 14 * 10 * 1%); }
+    &[data-pitch="A#"] { left: calc(100 / 14 * 12 * 1%); }
+  }
+}
