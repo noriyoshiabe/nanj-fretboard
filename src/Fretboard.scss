@@ -1,0 +1,52 @@
+.Fretboard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 24 / 4;
+  margin: 0 auto;
+
+  .string {
+    position: absolute;
+    display: block;
+    left: 4%;
+    right: 0;
+    height: 1px;
+    background-color: lightgray;
+
+    --number: 0;
+    top: calc((var(--number) - 1) * 20%);
+  }
+
+  .fret {
+    position: absolute;
+    display: block;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: lightgray;
+
+    --number: 0;
+    left: calc(var(--number) * 4%);
+  }
+
+  .dot {
+    position: absolute;
+    display: block;
+    top: 50%;
+    width: 2%;
+    aspect-ratio: 1 / 1;
+    border-radius: 100px;
+    background-color: lightgray;
+
+    --fret: 0;
+    left: calc(var(--fret) * 4% + 2%);
+    translate: -50% -50%;
+
+    &.--top {
+      top: 30%;
+    }
+
+    &.--bottom {
+      top: 70%;
+    }
+  }
+}
