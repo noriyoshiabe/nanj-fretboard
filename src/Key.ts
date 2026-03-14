@@ -21,12 +21,14 @@ export default class Key {
     }
   }
 
-  onPressed() {
+  onPressed(e: Event) {
+    e.preventDefault();
     this.el.classList.add("--pressed");
     this.onClick?.(this);
   }
 
-  onReleased() {
+  onReleased(e: Event) {
+    e.preventDefault();
     this.el.classList.remove("--pressed");
   }
 }
