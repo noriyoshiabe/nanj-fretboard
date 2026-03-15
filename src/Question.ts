@@ -54,7 +54,7 @@ export default class Question {
 
   lot(): QuestionItem {
     if (!this.lotItems.length) {
-      this.lotItems = shuffle(this.items); 
+      this.resetItems();
     }
     return this.lotItems.shift()!;
   }
