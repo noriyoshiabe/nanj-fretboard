@@ -8,7 +8,7 @@
   .content {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-evenly;
     width: calc(100vw - 20px);
     height: calc(100vh - 100px);
     padding: 0 10px;
