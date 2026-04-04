@@ -10,7 +10,7 @@ use crate::view::{View, Rect};
 
 pub struct App {
     canvas: HtmlCanvasElement,
-    root_view: Rc<RefCell<dyn View>>,
+    root_view: Rc<RefCell<RootView>>,
     dispathcer: Dispatcher,
 }
 
@@ -41,8 +41,8 @@ impl AppDelegate for App {
 
 impl App {
     pub fn new(canvas: HtmlCanvasElement) -> Result<Self, JsValue> {
-        let root_view: Rc<RefCell<dyn View>> = Rc::new(RefCell::new(RootView::new()));
-        let dispathcer = Dispatcher::new(Rc::clone(&root_view));
+        let root_view = Rc::new(RefCell::new(RootView::new()));
+        let dispathcer = Dispatcher::new(root_view.clone());
 
         Ok(Self {
             canvas,

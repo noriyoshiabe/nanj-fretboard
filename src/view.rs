@@ -41,6 +41,10 @@ impl Rect {
             y: self.y,
         }
     }
+
+    pub fn bottom(&self) -> f64 {
+        self.y + self.height
+    }
 }
 
 pub trait View {

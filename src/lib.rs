@@ -2,10 +2,14 @@ use wasm_bindgen::prelude::*;
 
 mod app;
 mod dispatcher;
-mod root_view;
 mod runtime;
 mod util;
 mod view;
+
+mod accidental;
+mod fretboard;
+mod keyboard;
+mod root_view;
 
 use crate::app::App;
 use crate::runtime::Runtime;
