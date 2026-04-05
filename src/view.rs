@@ -79,21 +79,4 @@ pub trait View {
     fn children(&self) -> &[Rc<RefCell<dyn View>>] {
         &[]
     }
-
-    #[allow(dead_code)]
-    fn children_mut(&mut self) -> &mut Vec<Rc<RefCell<dyn View>>> {
-        unimplemented!();
-    }
-
-    #[allow(dead_code)]
-    fn append_child(&mut self, child: Rc<RefCell<dyn View>>) {
-        self.children_mut().push(child);
-    }
-
-    #[allow(dead_code)]
-    fn remove_child(&mut self, child: &Rc<RefCell<dyn View>>) {
-        if let Some(index) = self.children().iter().position(|v| Rc::ptr_eq(v, child)) {
-            self.children_mut().remove(index);
-        }
-    }
 }

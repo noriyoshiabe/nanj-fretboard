@@ -5,7 +5,7 @@ use web_sys::CanvasRenderingContext2d;
 
 use crate::asset::Asset;
 use crate::nanj::NanJ;
-use crate::view::{Rect, View};
+use crate::view::{Rect, View, Point};
 
 pub struct Fretboard {
     frame: Rect,
@@ -91,17 +91,22 @@ impl View for Fretboard {
     fn children(&self) -> &[Rc<RefCell<dyn View>>] {
         self.children.as_slice()
     }
+
+    // temporary
+    fn pointer_down(&mut self, _: Point) -> bool {
+        // temporary
+        let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone()).unwrap())); // TODO
+        self.children.push(nanj.clone());
+        self.nanjs.push(nanj);
+
+        true
+    }
 }
 
 impl Fretboard {
     pub fn new(asset: Rc<Asset>) -> Self {
-        let mut children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
-        let mut nanjs: Vec<Rc<RefCell<NanJ>>> = Vec::new();
-
-        // temporary
-        let nanj = Rc::new(RefCell::new(NanJ::try_new(asset.clone()).unwrap())); // TODO
-        children.push(nanj.clone());
-        nanjs.push(nanj);
+        let children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
+        let nanjs: Vec<Rc<RefCell<NanJ>>> = Vec::new();
 
         Self {
             frame: Rect::default(),

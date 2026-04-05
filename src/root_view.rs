@@ -15,7 +15,6 @@ pub struct RootView {
     accidental: Rc<RefCell<Accidental>>,
     fretboard: Rc<RefCell<Fretboard>>,
     keyboard: Rc<RefCell<Keyboard>>,
-    asset: Rc<Asset>,
 }
 
 impl View for RootView {
@@ -68,10 +67,6 @@ impl View for RootView {
     fn children(&self) -> &[Rc<RefCell<dyn View>>] {
         self.children.as_slice()
     }
-
-    fn children_mut(&mut self) -> &mut Vec<Rc<RefCell<dyn View>>> {
-        &mut self.children
-    }
 }
 
 impl RootView {
@@ -81,7 +76,7 @@ impl RootView {
         let accidental = Rc::new(RefCell::new(Accidental::new()));
         children.push(accidental.clone());
 
-        let fretboard = Rc::new(RefCell::new(Fretboard::new(asset.clone())));
+        let fretboard = Rc::new(RefCell::new(Fretboard::new(asset)));
         children.push(fretboard.clone());
 
         let keyboard = Rc::new(RefCell::new(Keyboard::new()));
@@ -93,7 +88,6 @@ impl RootView {
             accidental,
             fretboard,
             keyboard,
-            asset,
         }
     }
 }
