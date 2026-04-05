@@ -4,7 +4,7 @@ use web_sys::{CanvasRenderingContext2d, Performance};
 
 use crate::asset::Asset;
 use crate::view::{Rect, View};
-use crate::question::{QuestionEvent, QuestionObserver};
+use crate::question::{QuestionItem, QuestionEvent, QuestionObserver};
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum NanJState {
@@ -19,6 +19,7 @@ pub struct NanJ {
     performance: Performance,
     state: NanJState,
     asset: Rc<Asset>,
+    pub question_item: QuestionItem,
 }
 
 impl View for NanJ {
@@ -27,7 +28,7 @@ impl View for NanJ {
     }
 
     fn set_frame(&mut self, frame: Rect) {
-        self.frame = frame
+        self.frame = frame;
     }
 
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
@@ -115,7 +116,7 @@ impl QuestionObserver for NanJ {
 }
 
 impl NanJ {
-    pub fn try_new(asset: Rc<Asset>) -> Result<Self, JsValue> {
+    pub fn try_new(asset: Rc<Asset>, question_item: QuestionItem) -> Result<Self, JsValue> {
         let performance = web_sys::window().ok_or("window not exists.")?.performance().ok_or("performance not exists.")?;
         let state = NanJState::Normal;
 
@@ -124,6 +125,7 @@ impl NanJ {
             performance,
             state,
             asset,
+            question_item,
         })
     }
 }

@@ -5,8 +5,8 @@ use crate::task_queue::TaskQueue;
 
 #[derive(Clone, Copy)]
 pub struct QuestionItem {
-    string: u8,
-    fret: u8,
+    pub string: u8,
+    pub fret: u8,
     note: &'static str,
 }
 
@@ -56,8 +56,8 @@ impl Question {
 
     pub fn start(&mut self) {
         self.notify_event(QuestionEvent::New(QuestionItem{
-            string: 1,
-            fret: 0,
+            string: 6,
+            fret: 12,
             note: "C",
         }))
     }

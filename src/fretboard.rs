@@ -27,10 +27,15 @@ impl View for Fretboard {
     }
 
     fn layout(&mut self) -> Result<(), JsValue> {
-        let s = self.frame.width / 13. * 0.8;
+        let s = self.frame.width / 13. * 0.7;
+        let x_offset = self.frame.width / 13. * 0.15;
+        let y_offset = -s * 0.5;
 
-        for nanj in self.nanjs.iter() {
-            nanj.borrow_mut().set_frame(Rect { x: 0., y: 0., width: s, height: s});
+        for rc in self.nanjs.iter() {
+            let mut nanj = rc.borrow_mut();
+            let x = nanj.question_item.fret as f64 * self.frame.width / 13. + x_offset;
+            let y = (nanj.question_item.string - 1) as f64 * self.frame.height / 5. + y_offset;
+            nanj.set_frame(Rect { x, y, width: s, height: s});
         }
 
         Ok(())
@@ -100,8 +105,8 @@ impl View for Fretboard {
 
 impl QuestionObserver for Fretboard {
     fn on_notify_event(&mut self, event: QuestionEvent) -> Result<(), JsValue> {
-        if let QuestionEvent::New(_question) = event {
-            let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone())?));
+        if let QuestionEvent::New(question_item) = event {
+            let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone(), question_item)?));
             self.children.push(nanj.clone());
             self.nanjs.push(nanj.clone());
 
