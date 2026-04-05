@@ -9,12 +9,14 @@ use crate::question::Question;
 use crate::root_view::RootView;
 use crate::runtime::AppDelegate;
 use crate::view::{View, Rect};
+use crate::task_queue::TaskQueue;
 
 pub struct App {
     canvas: HtmlCanvasElement,
     root_view: Rc<RefCell<RootView>>,
     dispathcer: Dispatcher,
     question: Rc<RefCell<Question>>,
+    task_queue: Rc<RefCell<TaskQueue>>,
 }
 
 impl AppDelegate for App {
@@ -32,6 +34,7 @@ impl AppDelegate for App {
     }
 
     fn render(&self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
+        self.task_queue.borrow_mut().dispatch_task(next)?;
         self.dispathcer.dispatch_render(ctx, dpr, next)
     }
 
@@ -47,7 +50,8 @@ impl AppDelegate for App {
 impl App {
     pub fn try_new(canvas: HtmlCanvasElement) -> Result<Self, JsValue> {
         let asset = Rc::new(Asset::try_new()?);
-        let question = Rc::new(RefCell::new(Question::new()));
+        let task_queue = Rc::new(RefCell::new(TaskQueue::new()));
+        let question = Rc::new(RefCell::new(Question::new(task_queue.clone())));
         let root_view = Rc::new(RefCell::new(RootView::new(asset, question.clone())));
         let dispathcer = Dispatcher::new(root_view.clone());
 
@@ -56,6 +60,7 @@ impl App {
             root_view,
             dispathcer,
             question,
+            task_queue,
         })
     }
 }

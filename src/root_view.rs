@@ -82,7 +82,7 @@ impl RootView {
         let fretboard = Rc::new(RefCell::new(Fretboard::new(asset, question.clone())));
         children.push(fretboard.clone());
 
-        let keyboard = Rc::new(RefCell::new(Keyboard::new()));
+        let keyboard = Rc::new(RefCell::new(Keyboard::new(question.clone())));
         children.push(keyboard.clone());
 
         question.borrow_mut().add_observer(fretboard.clone());

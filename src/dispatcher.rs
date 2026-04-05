@@ -54,28 +54,21 @@ impl Dispatcher {
     }
 
     pub fn dispatch_pointer_down(&mut self, x: f64, y: f64) -> Result<(), JsValue> {
-        let mut layout = false;
-
-        self.pointing_view = self._dispatch_pointer_down(Rc::clone(&self.root_view), Point { x, y }, &mut layout)?;
-
-        if layout {
-            self.dispatch_layout()?;
-        }
-
+        self.pointing_view = self._dispatch_pointer_down(Rc::clone(&self.root_view), Point { x, y })?;
         Ok(())
     }
 
-    fn _dispatch_pointer_down(&mut self, parent: Rc<RefCell<dyn View>>, p: Point, layout: &mut bool) -> Result<Option<Rc<RefCell<dyn View>>>, JsValue> {
+    fn _dispatch_pointer_down(&mut self, parent: Rc<RefCell<dyn View>>, p: Point) -> Result<Option<Rc<RefCell<dyn View>>>, JsValue> {
         for child in parent.borrow().children().iter().rev() {
             let frame = child.borrow().frame();
             let local_p = p - parent.borrow().frame().origin();
 
-            if let Some(pointing_view) = self._dispatch_pointer_down(Rc::clone(&child), local_p, layout)? {
+            if let Some(pointing_view) = self._dispatch_pointer_down(Rc::clone(&child), local_p)? {
                 return Ok(Some(pointing_view));
             }
 
             if frame.contains(local_p) {
-                if child.borrow_mut().pointer_down(local_p, layout)? {
+                if child.borrow_mut().pointer_down(local_p)? {
                     return Ok(Some(Rc::clone(&child)));
                 }
             }
@@ -83,7 +76,7 @@ impl Dispatcher {
 
         let frame = parent.borrow().frame();
         if frame.contains(p) {
-            if parent.borrow_mut().pointer_down(p - frame.origin(), layout)? {
+            if parent.borrow_mut().pointer_down(p - frame.origin())? {
                 return Ok(Some(parent));
             }
         }
@@ -93,14 +86,8 @@ impl Dispatcher {
 
     pub fn dispatch_pointer_up(&mut self, x: f64, y: f64) -> Result<(), JsValue> {
         if let Some(pointing_view) = &self.pointing_view {
-            let mut layout = false;
-
             let p = self._calc_local_point(Rc::clone(&self.root_view), Rc::clone(&pointing_view), Point { x, y });
-            pointing_view.borrow_mut().pointer_up(p, &mut layout)?;
-
-            if layout {
-                self.dispatch_layout()?;
-            }
+            pointing_view.borrow_mut().pointer_up(p)?;
         }
 
         Ok(())

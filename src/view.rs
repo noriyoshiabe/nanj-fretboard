@@ -75,11 +75,11 @@ pub trait View {
         Ok(())
     }
 
-    fn pointer_down(&mut self, _p: Point, _layout: &mut bool) -> Result<bool, JsValue> {
+    fn pointer_down(&mut self, _p: Point) -> Result<bool, JsValue> {
         Ok(false)
     }
 
-    fn pointer_up(&mut self, _p: Point, _layout: &mut bool) -> Result<(), JsValue> {
+    fn pointer_up(&mut self, _p: Point) -> Result<(), JsValue> {
         Ok(())
     }
 

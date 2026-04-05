@@ -13,6 +13,7 @@ mod keyboard;
 mod question;
 mod nanj;
 mod root_view;
+mod task_queue;
 
 use crate::app::App;
 use crate::runtime::Runtime;

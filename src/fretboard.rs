@@ -99,15 +99,18 @@ impl View for Fretboard {
 }
 
 impl QuestionObserver for Fretboard {
-    fn on_notify_event(&mut self, event: QuestionEvent) {
+    fn on_notify_event(&mut self, event: QuestionEvent) -> Result<(), JsValue> {
         if let QuestionEvent::New(_question) = event {
-            let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone()).unwrap())); // TODO
+            let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone())?));
             self.children.push(nanj.clone());
             self.nanjs.push(nanj.clone());
 
-            self.layout();
-            nanj.borrow_mut().layout();
+            self.question.borrow_mut().add_observer(nanj.clone());
+
+            self.layout()?;
         }
+
+        Ok(())
     }
 }
 

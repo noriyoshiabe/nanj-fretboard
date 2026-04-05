@@ -51,12 +51,12 @@ impl View for Accidental {
         Ok(())
     }
 
-    fn pointer_down(&mut self, _: Point, _: &mut bool) -> Result<bool, JsValue> {
+    fn pointer_down(&mut self, _: Point) -> Result<bool, JsValue> {
         self.active = true;
         Ok(true)
     }
 
-    fn pointer_up(&mut self, _: Point, _: &mut bool) -> Result<(), JsValue> {
+    fn pointer_up(&mut self, _: Point) -> Result<(), JsValue> {
         self.active = false;
         Ok(())
     }

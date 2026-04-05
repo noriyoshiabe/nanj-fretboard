@@ -5,6 +5,8 @@ use web_sys::CanvasRenderingContext2d;
 
 use crate::view::{Rect, View, Point};
 
+use crate::question::Question;
+
 pub struct Keyboard {
     frame: Rect,
     children: Vec<Rc<RefCell<dyn View>>>,
@@ -49,7 +51,7 @@ impl View for Keyboard {
 }
 
 impl Keyboard {
-    pub fn new() -> Self {
+    pub fn new(question: Rc<RefCell<Question>>) -> Self {
         let mut children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
         let mut normal_pads: Vec<Rc<RefCell<NotePad>>> = Vec::new();
         let mut accidental_pads: Vec<Rc<RefCell<NotePad>>> = Vec::new();
@@ -65,7 +67,7 @@ impl Keyboard {
         ];
 
         for note in notes {
-            let note_pad = Rc::new(RefCell::new(NotePad::new(note.to_string(), false)));
+            let note_pad = Rc::new(RefCell::new(NotePad::new(question.clone(), note.to_string(), false)));
             normal_pads.push(note_pad.clone());
             children.push(note_pad);
         }
@@ -79,7 +81,7 @@ impl Keyboard {
         ];
 
         for note in notes {
-            let note_pad = Rc::new(RefCell::new(NotePad::new(note.to_string(), true)));
+            let note_pad = Rc::new(RefCell::new(NotePad::new(question.clone(), note.to_string(), true)));
             accidental_pads.push(note_pad.clone());
             children.push(note_pad);
         }
@@ -95,10 +97,10 @@ impl Keyboard {
 
 pub struct NotePad {
     frame: Rect,
-    #[allow(unused)]
     note: String,
     accidental: bool,
     active: bool, 
+    question: Rc<RefCell<Question>>,
 }
 
 impl View for NotePad {
@@ -136,24 +138,26 @@ impl View for NotePad {
         Ok(())
     }
 
-    fn pointer_down(&mut self, _: Point, _: &mut bool) -> Result<bool, JsValue> {
+    fn pointer_down(&mut self, _: Point) -> Result<bool, JsValue> {
         self.active = true;
+        self.question.borrow_mut().answer(self.note.as_str());
         Ok(true)
     }
 
-    fn pointer_up(&mut self, _: Point, _: &mut bool) -> Result<(), JsValue> {
+    fn pointer_up(&mut self, _: Point) -> Result<(), JsValue> {
         self.active = false;
         Ok(())
     }
 }
 
 impl NotePad {
-    pub fn new(note: String, accidental: bool) -> Self {
+    pub fn new(question: Rc<RefCell<Question>>, note: String, accidental: bool) -> Self {
         Self {
             frame: Rect::default(),
             note,
             accidental,
             active: false,
+            question,
         }
     }
 }

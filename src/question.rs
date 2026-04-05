@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
-//use wasm_bindgen::prelude::*;
+use wasm_bindgen::prelude::*;
+use crate::task_queue::TaskQueue;
 
 #[derive(Clone, Copy)]
 pub struct QuestionItem {
@@ -16,19 +17,21 @@ pub enum QuestionEvent {
 }
 
 pub trait QuestionObserver {
-    fn on_notify_event(&mut self, event: QuestionEvent);
+    fn on_notify_event(&mut self, event: QuestionEvent) -> Result<(), JsValue>;
 }
 
 pub struct Question {
     observers: Vec<Weak<RefCell<dyn QuestionObserver>>>,
+    task_queue: Rc<RefCell<TaskQueue>>,
 }
 
 impl Question {
-    pub fn new() -> Self {
+    pub fn new(task_queue: Rc<RefCell<TaskQueue>>) -> Self {
         let observers: Vec<Weak<RefCell<dyn QuestionObserver>>> = Vec::new();
 
         Self {
             observers,
+            task_queue,
         }
     }
 
@@ -37,14 +40,18 @@ impl Question {
     }
 
     fn notify_event(&mut self, event: QuestionEvent) {
-        self.observers.retain(|weak| {
-            if let Some(rc) = weak.upgrade() {
-                rc.borrow_mut().on_notify_event(event);
-                true
-            } else {
-                false
-            }
-        });
+        self.observers.retain(|weak| weak.strong_count() > 0);
+
+        for weak in self.observers.iter() {
+            let weac_c = weak.clone();
+
+            self.task_queue.borrow_mut().enqueue(move || -> Result<(), JsValue> {
+                if let Some(rc) = weac_c.upgrade() {
+                    rc.borrow_mut().on_notify_event(event)?;
+                }
+                Ok(())
+            });
+        }
     }
 
     pub fn start(&mut self) {
@@ -55,7 +62,7 @@ impl Question {
         }))
     }
 
-    pub fn answer(&mut self) {
-        self.notify_event(QuestionEvent::Answer{ correct: true });
+    pub fn answer(&mut self, note: &str) {
+        self.notify_event(QuestionEvent::Answer{ correct: true })
     }
 }
