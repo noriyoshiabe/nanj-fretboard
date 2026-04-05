@@ -28,7 +28,7 @@ impl View for RootView {
     }
 
     fn layout(&mut self) -> Result<(), JsValue> {
-        let width = (self.frame.width * 0.25).min(self.frame.height * 0.15);
+        let width = (self.frame.width * 0.25).min(self.frame.height * 0.2);
         let height = width / (10. / 3.);
         let x = (self.frame.width - width) / 2.;
 
@@ -41,7 +41,11 @@ impl View for RootView {
 
         let mut f_fretboard = Rect { x, y: 0., width, height };
 
-        let h_margin = self.frame.width * 0.05;
+        let h_margin = if self.frame.width < self.frame.height {
+            self.frame.width * 0.05
+        } else {
+            self.frame.width * 0.15
+        };
         let width = self.frame.width - h_margin * 2.;
         let height = width / (14. / (4. * 0.95));
         let x = h_margin;
@@ -79,11 +83,11 @@ impl RootView {
         let accidental = Rc::new(RefCell::new(Accidental::new(question.clone())));
         children.push(accidental.clone());
 
-        let fretboard = Rc::new(RefCell::new(Fretboard::new(asset, question.clone())));
-        children.push(fretboard.clone());
-
         let keyboard = Rc::new(RefCell::new(Keyboard::new(question.clone())));
         children.push(keyboard.clone());
+
+        let fretboard = Rc::new(RefCell::new(Fretboard::new(asset, question.clone())));
+        children.push(fretboard.clone());
 
         question.borrow_mut().add_observer(accidental.clone());
         question.borrow_mut().add_observer(fretboard.clone());
