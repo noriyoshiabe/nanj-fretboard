@@ -10,6 +10,7 @@ mod asset;
 mod accidental;
 mod fretboard;
 mod keyboard;
+mod question;
 mod nanj;
 mod root_view;
 

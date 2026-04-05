@@ -3,15 +3,18 @@ use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
+use crate::view::{Rect, View};
+
 use crate::asset::Asset;
 use crate::nanj::NanJ;
-use crate::view::{Rect, View, Point};
+use crate::question::{Question, QuestionEvent, QuestionObserver};
 
 pub struct Fretboard {
     frame: Rect,
     children: Vec<Rc<RefCell<dyn View>>>,
     nanjs: Vec<Rc<RefCell<NanJ>>>,
     asset: Rc<Asset>,
+    question: Rc<RefCell<Question>>,
 }
 
 impl View for Fretboard {
@@ -93,22 +96,23 @@ impl View for Fretboard {
     fn children(&self) -> &[Rc<RefCell<dyn View>>] {
         self.children.as_slice()
     }
+}
 
-    // temporary
-    fn pointer_down(&mut self, _: Point, layout: &mut bool) -> Result<bool, JsValue> {
-        // temporary
-        let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone())?)); // TODO
-        self.children.push(nanj.clone());
-        self.nanjs.push(nanj);
+impl QuestionObserver for Fretboard {
+    fn on_notify_event(&mut self, event: QuestionEvent) {
+        if let QuestionEvent::New(_question) = event {
+            let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone()).unwrap())); // TODO
+            self.children.push(nanj.clone());
+            self.nanjs.push(nanj.clone());
 
-        *layout = true;
-
-        Ok(true)
+            self.layout();
+            nanj.borrow_mut().layout();
+        }
     }
 }
 
 impl Fretboard {
-    pub fn new(asset: Rc<Asset>) -> Self {
+    pub fn new(asset: Rc<Asset>, question: Rc<RefCell<Question>>) -> Self {
         let children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
         let nanjs: Vec<Rc<RefCell<NanJ>>> = Vec::new();
 
@@ -117,6 +121,7 @@ impl Fretboard {
             children,
             nanjs,
             asset,
+            question,
         }
     }
 }

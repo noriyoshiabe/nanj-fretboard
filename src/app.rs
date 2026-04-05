@@ -5,6 +5,7 @@ use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
 use crate::asset::Asset;
 use crate::dispatcher::Dispatcher;
+use crate::question::Question;
 use crate::root_view::RootView;
 use crate::runtime::AppDelegate;
 use crate::view::{View, Rect};
@@ -13,11 +14,14 @@ pub struct App {
     canvas: HtmlCanvasElement,
     root_view: Rc<RefCell<RootView>>,
     dispathcer: Dispatcher,
+    question: Rc<RefCell<Question>>,
 }
 
 impl AppDelegate for App {
     fn start(&mut self) -> Result<(), JsValue> {
-        self.layout()
+        self.layout()?;
+        self.question.borrow_mut().start();
+        Ok(())
     }
 
     fn layout(&self) -> Result<(), JsValue> {
@@ -42,14 +46,16 @@ impl AppDelegate for App {
 
 impl App {
     pub fn try_new(canvas: HtmlCanvasElement) -> Result<Self, JsValue> {
-        let asset = Asset::try_new()?;
-        let root_view = Rc::new(RefCell::new(RootView::new(Rc::new(asset))));
+        let asset = Rc::new(Asset::try_new()?);
+        let question = Rc::new(RefCell::new(Question::new()));
+        let root_view = Rc::new(RefCell::new(RootView::new(asset, question.clone())));
         let dispathcer = Dispatcher::new(root_view.clone());
 
         Ok(Self {
             canvas,
             root_view,
             dispathcer,
+            question,
         })
     }
 }

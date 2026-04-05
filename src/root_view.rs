@@ -8,6 +8,7 @@ use crate::asset::Asset;
 use crate::accidental::Accidental;
 use crate::fretboard::Fretboard;
 use crate::keyboard::Keyboard;
+use crate::question::Question;
 
 pub struct RootView {
     frame: Rect,
@@ -72,17 +73,19 @@ impl View for RootView {
 }
 
 impl RootView {
-    pub fn new(asset: Rc<Asset>) -> Self {
+    pub fn new(asset: Rc<Asset>, question: Rc<RefCell<Question>>) -> Self {
         let mut children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
 
         let accidental = Rc::new(RefCell::new(Accidental::new()));
         children.push(accidental.clone());
 
-        let fretboard = Rc::new(RefCell::new(Fretboard::new(asset)));
+        let fretboard = Rc::new(RefCell::new(Fretboard::new(asset, question.clone())));
         children.push(fretboard.clone());
 
         let keyboard = Rc::new(RefCell::new(Keyboard::new()));
         children.push(keyboard.clone());
+
+        question.borrow_mut().add_observer(fretboard.clone());
 
         Self {
             frame: Rect::default(),

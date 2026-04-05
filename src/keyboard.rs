@@ -54,7 +54,7 @@ impl Keyboard {
         let mut normal_pads: Vec<Rc<RefCell<NotePad>>> = Vec::new();
         let mut accidental_pads: Vec<Rc<RefCell<NotePad>>> = Vec::new();
 
-        let pitches = [
+        let notes = [
             "C",
             "D",
             "E",
@@ -64,13 +64,13 @@ impl Keyboard {
             "B",
         ];
 
-        for pitch in pitches {
-            let note_pad = Rc::new(RefCell::new(NotePad::new(pitch.to_string(), false)));
+        for note in notes {
+            let note_pad = Rc::new(RefCell::new(NotePad::new(note.to_string(), false)));
             normal_pads.push(note_pad.clone());
             children.push(note_pad);
         }
 
-        let pitches = [
+        let notes = [
             "C#",
             "D#",
             "F#",
@@ -78,8 +78,8 @@ impl Keyboard {
             "A#",
         ];
 
-        for pitch in pitches {
-            let note_pad = Rc::new(RefCell::new(NotePad::new(pitch.to_string(), true)));
+        for note in notes {
+            let note_pad = Rc::new(RefCell::new(NotePad::new(note.to_string(), true)));
             accidental_pads.push(note_pad.clone());
             children.push(note_pad);
         }
@@ -96,7 +96,7 @@ impl Keyboard {
 pub struct NotePad {
     frame: Rect,
     #[allow(unused)]
-    pitch: String,
+    note: String,
     accidental: bool,
     active: bool, 
 }
@@ -148,10 +148,10 @@ impl View for NotePad {
 }
 
 impl NotePad {
-    pub fn new(pitch: String, accidental: bool) -> Self {
+    pub fn new(note: String, accidental: bool) -> Self {
         Self {
             frame: Rect::default(),
-            pitch,
+            note,
             accidental,
             active: false,
         }
