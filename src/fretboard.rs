@@ -93,11 +93,13 @@ impl View for Fretboard {
     }
 
     // temporary
-    fn pointer_down(&mut self, _: Point) -> bool {
+    fn pointer_down(&mut self, _: Point, layout: &mut bool) -> bool {
         // temporary
         let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone()).unwrap())); // TODO
         self.children.push(nanj.clone());
         self.nanjs.push(nanj);
+
+        *layout = true;
 
         true
     }

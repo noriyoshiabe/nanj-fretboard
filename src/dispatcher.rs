@@ -52,20 +52,26 @@ impl Dispatcher {
     }
 
     pub fn dispatch_pointer_down(&mut self, x: f64, y: f64) {
-        self.pointing_view = self._dispatch_pointer_down(Rc::clone(&self.root_view), Point { x, y });
+        let mut layout = false;
+
+        self.pointing_view = self._dispatch_pointer_down(Rc::clone(&self.root_view), Point { x, y }, &mut layout);
+
+        if layout {
+            self.dispatch_layout();
+        }
     }
 
-    fn _dispatch_pointer_down(&mut self, parent: Rc<RefCell<dyn View>>, p: Point) -> Option<Rc<RefCell<dyn View>>> {
+    fn _dispatch_pointer_down(&mut self, parent: Rc<RefCell<dyn View>>, p: Point, layout: &mut bool) -> Option<Rc<RefCell<dyn View>>> {
         for child in parent.borrow().children().iter().rev() {
             let frame = child.borrow().frame();
             let local_p = p - parent.borrow().frame().origin();
 
-            if let Some(pointing_view) = self._dispatch_pointer_down(Rc::clone(&child), local_p) {
+            if let Some(pointing_view) = self._dispatch_pointer_down(Rc::clone(&child), local_p, layout) {
                 return Some(pointing_view);
             }
 
             if frame.contains(local_p) {
-                if child.borrow_mut().pointer_down(local_p) {
+                if child.borrow_mut().pointer_down(local_p, layout) {
                     return Some(Rc::clone(&child));
                 }
             }
@@ -73,7 +79,7 @@ impl Dispatcher {
 
         let frame = parent.borrow().frame();
         if frame.contains(p) {
-            if parent.borrow_mut().pointer_down(p - frame.origin()) {
+            if parent.borrow_mut().pointer_down(p - frame.origin(), layout) {
                 return Some(parent);
             }
         }
@@ -83,8 +89,14 @@ impl Dispatcher {
 
     pub fn dispatch_pointer_up(&mut self, x: f64, y: f64) {
         if let Some(pointing_view) = &self.pointing_view {
+            let mut layout = false;
+
             let p = self._calc_local_point(Rc::clone(&self.root_view), Rc::clone(&pointing_view), Point { x, y });
-            pointing_view.borrow_mut().pointer_up(p);
+            pointing_view.borrow_mut().pointer_up(p, &mut layout);
+
+            if layout {
+                self.dispatch_layout();
+            }
         }
     }
 

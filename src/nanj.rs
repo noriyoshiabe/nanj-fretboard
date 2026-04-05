@@ -40,12 +40,12 @@ impl View for NanJ {
         Ok(())
     }
 
-    fn pointer_down(&mut self, _: Point) -> bool {
+    fn pointer_down(&mut self, _: Point, _: &mut bool) -> bool {
         self.started_at = self.performance.now();
         true
     }
 
-    fn pointer_up(&mut self, _: Point) {
+    fn pointer_up(&mut self, _: Point, _: &mut bool) {
         self.started_at = self.performance.now();
     }
 }
