@@ -26,8 +26,8 @@ impl AppDelegate for App {
         self.dispathcer.dispatch_layout();
     }
 
-    fn render(&self, ctx: &CanvasRenderingContext2d, next: &mut bool) -> Result<(), JsValue> {
-        self.dispathcer.dispatch_render(ctx, next)
+    fn render(&self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
+        self.dispathcer.dispatch_render(ctx, dpr, next)
     }
 
     fn pointer_down(&mut self, x: f64, y: f64) {

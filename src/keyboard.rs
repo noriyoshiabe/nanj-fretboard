@@ -19,7 +19,7 @@ impl View for Keyboard {
     fn layout(&mut self) {
     }
 
-    fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: &mut bool) -> Result<(), JsValue> {
+    fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: f64, _: &mut bool) -> Result<(), JsValue> {
         ctx.fill_rect(0.0, 0.0, self.frame.width, self.frame.height);
         Ok(())
     }

@@ -20,10 +20,7 @@ impl View for Accidental {
     fn layout(&mut self) {
     }
 
-    fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: &mut bool) -> Result<(), JsValue> {
-        let window = web_sys::window().ok_or("window not exists.")?;
-        let dpr = window.device_pixel_ratio();
-        
+    fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, _: &mut bool) -> Result<(), JsValue> {
         ctx.begin_path();
 
         ctx.set_stroke_style_str("gray");

@@ -68,7 +68,7 @@ pub trait View {
     }
 
     fn layout(&mut self);
-    fn draw(&mut self, ctx: &CanvasRenderingContext2d, next: &mut bool) -> Result<(), JsValue>;
+    fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue>;
 
     fn pointer_down(&mut self, _p: Point) -> bool {
         false

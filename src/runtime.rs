@@ -7,7 +7,7 @@ use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlElement, PointerE
 pub trait AppDelegate {
     fn start(&mut self);
     fn layout(&self);
-    fn render(&self, ctx: &CanvasRenderingContext2d, next: &mut bool) -> Result<(), JsValue>;
+    fn render(&self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue>;
     fn pointer_down(&mut self, x: f64, y: f64);
     fn pointer_up(&mut self, x: f64, y: f64);
 }
@@ -35,12 +35,15 @@ impl Runtime {
             animation_frame_callback: Closure::wrap(Box::new(|| {})),
         }));
 
+        let window = web_sys::window().ok_or("window not exists.")?;
+        let dpr = window.device_pixel_ratio();
+
         let weak_rc = Rc::downgrade(&rt_ctx);
         rt_ctx.borrow_mut().animation_frame_callback = Closure::wrap(Box::new(move || {
             if let Some(rc) = weak_rc.upgrade() {
                 let mut next = false;
 
-                rc.borrow_mut().app.render(&ctx, &mut next).unwrap_or_else(|e| {
+                rc.borrow_mut().app.render(&ctx, dpr, &mut next).unwrap_or_else(|e| {
                     web_sys::console::error_1(&e);
                 });
 
@@ -53,9 +56,6 @@ impl Runtime {
                 }
             }
         }) as Box<dyn FnMut()>);
-
-        let window = web_sys::window().ok_or("window not exists.")?;
-        let dpr = window.device_pixel_ratio();
 
         let weak_rc = Rc::downgrade(&rt_ctx);
         Self::add_event_listener(Rc::clone(&rt_ctx), canvas.clone(), "pointerdown", move |e: JsValue| -> Result<(), JsValue> {

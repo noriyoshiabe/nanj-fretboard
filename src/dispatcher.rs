@@ -30,12 +30,12 @@ impl Dispatcher {
         }
     }
 
-    pub fn dispatch_render(&self, ctx: &CanvasRenderingContext2d, next: &mut bool) -> Result<(), JsValue> {
-        self._dispatch_render(Rc::clone(&self.root_view), ctx, next)
+    pub fn dispatch_render(&self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
+        self._dispatch_render(Rc::clone(&self.root_view), ctx, dpr, next)
     }
 
-    fn _dispatch_render(&self, parent: Rc<RefCell<dyn View>>, ctx: &CanvasRenderingContext2d, next: &mut bool) -> Result<(), JsValue> {
-        parent.borrow_mut().draw(ctx, next)?;
+    fn _dispatch_render(&self, parent: Rc<RefCell<dyn View>>, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
+        parent.borrow_mut().draw(ctx, dpr, next)?;
 
         for child in parent.borrow().children().iter() {
             let frame = child.borrow().frame();
@@ -43,7 +43,7 @@ impl Dispatcher {
             ctx.save();
             ctx.translate(frame.x, frame.y)?;
 
-            self._dispatch_render(Rc::clone(&child), ctx, next)?;
+            self._dispatch_render(Rc::clone(&child), ctx, dpr, next)?;
 
             ctx.restore();
         }

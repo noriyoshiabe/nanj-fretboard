@@ -58,7 +58,7 @@ impl View for RootView {
         self.fretboard.borrow_mut().set_frame(f_keyboard);
     }
 
-    fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: &mut bool) -> Result<(), JsValue> {
+    fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: f64, _: &mut bool) -> Result<(), JsValue> {
         ctx.clear_rect(0.0, 0.0, self.frame.width, self.frame.height);
         Ok(())
     }
