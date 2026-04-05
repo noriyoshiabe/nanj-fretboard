@@ -61,13 +61,13 @@ impl View for Fretboard {
             ctx.begin_path();
 
             if i == 12 {
-                ctx.arc(x, self.frame.height / 10. * 3., r, 0., std::f64::consts::PI * 2.).unwrap();
+                ctx.arc(x, self.frame.height / 10. * 3., r, 0., std::f64::consts::PI * 2.)?;
                 ctx.fill();
 
                 ctx.begin_path();
-                ctx.arc(x, self.frame.height / 10. * 7., r, 0., std::f64::consts::PI * 2.).unwrap();
+                ctx.arc(x, self.frame.height / 10. * 7., r, 0., std::f64::consts::PI * 2.)?;
             } else {
-                ctx.arc(x, y, r, 0., std::f64::consts::PI * 2.).unwrap();
+                ctx.arc(x, y, r, 0., std::f64::consts::PI * 2.)?;
             }
 
             ctx.fill();

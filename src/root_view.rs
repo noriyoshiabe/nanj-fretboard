@@ -41,7 +41,7 @@ impl View for RootView {
 
         let h_margin = self.frame.width * 0.05;
         let width = self.frame.width - h_margin * 2.;
-        let height = width / (14. / 3.);
+        let height = width / (14. / (4. * 0.95));
         let x = h_margin;
 
         let mut f_keyboard = Rect { x, y: 0., width, height };

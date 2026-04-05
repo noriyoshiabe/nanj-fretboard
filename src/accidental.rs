@@ -54,12 +54,12 @@ impl View for Accidental {
         Ok(())
     }
 
-    fn pointer_down(&mut self, _p: Point) -> bool {
+    fn pointer_down(&mut self, _: Point) -> bool {
         self.active = true;
         true
     }
 
-    fn pointer_up(&mut self, _p: Point) {
+    fn pointer_up(&mut self, _: Point) {
         self.active = false
     }
 
