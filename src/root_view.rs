@@ -54,8 +54,8 @@ impl View for RootView {
         f_keyboard.y = f_fretboard.bottom() + v_space;
                           
         self.accidental.borrow_mut().set_frame(f_acccidental);
-        self.keyboard.borrow_mut().set_frame(f_fretboard);
-        self.fretboard.borrow_mut().set_frame(f_keyboard);
+        self.fretboard.borrow_mut().set_frame(f_fretboard);
+        self.keyboard.borrow_mut().set_frame(f_keyboard);
     }
 
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: f64, _: &mut bool) -> Result<(), JsValue> {

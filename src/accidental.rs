@@ -21,22 +21,23 @@ impl View for Accidental {
     }
 
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, _: &mut bool) -> Result<(), JsValue> {
-        ctx.begin_path();
-
         ctx.set_stroke_style_str("gray");
+        ctx.set_line_width(1.0 * dpr);
 
         if !self.active {
            ctx.set_global_alpha(0.5);
         }
 
-        ctx.set_line_width(1.0 * dpr);
+        ctx.begin_path();
 
-        ctx.move_to(self.bounds().left(), self.bounds().top());
+        let bounds = self.bounds();
 
-        ctx.line_to(self.bounds().right(), self.bounds().top());
-        ctx.line_to(self.bounds().right(), self.bounds().bottom());
-        ctx.line_to(self.bounds().left(), self.bounds().bottom());
-        ctx.line_to(self.bounds().left(), self.bounds().top());
+        ctx.move_to(bounds.left(), bounds.top());
+
+        ctx.line_to(bounds.right(), bounds.top());
+        ctx.line_to(bounds.right(), bounds.bottom());
+        ctx.line_to(bounds.left(), bounds.bottom());
+        ctx.line_to(bounds.left(), bounds.top());
 
         ctx.stroke();
 
