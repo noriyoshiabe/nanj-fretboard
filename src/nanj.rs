@@ -22,8 +22,9 @@ impl View for NanJ {
         self.frame = frame
     }
 
-    fn layout(&mut self) {
-        self.source_canvas = self.asset.nanj_normal.source_canvas(self.frame.width, self.frame.height).unwrap(); // TODO
+    fn layout(&mut self) -> Result<(), JsValue> {
+        self.source_canvas = self.asset.nanj_normal.source_canvas(self.frame.width, self.frame.height)?;
+        Ok(())
     }
 
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: f64, next: &mut bool) -> Result<(), JsValue> {
@@ -40,13 +41,14 @@ impl View for NanJ {
         Ok(())
     }
 
-    fn pointer_down(&mut self, _: Point, _: &mut bool) -> bool {
+    fn pointer_down(&mut self, _: Point, _: &mut bool) -> Result<bool, JsValue> {
         self.started_at = self.performance.now();
-        true
+        Ok(true)
     }
 
-    fn pointer_up(&mut self, _: Point, _: &mut bool) {
+    fn pointer_up(&mut self, _: Point, _: &mut bool) -> Result<(), JsValue> {
         self.started_at = self.performance.now();
+        Ok(())
     }
 }
 

@@ -16,27 +16,27 @@ pub struct App {
 }
 
 impl AppDelegate for App {
-    fn start(&mut self) {
-        self.layout();
+    fn start(&mut self) -> Result<(), JsValue> {
+        self.layout()
     }
 
-    fn layout(&self) {
+    fn layout(&self) -> Result<(), JsValue> {
         let width = self.canvas.width() as f64;
         let height = self.canvas.height() as f64;
         self.root_view.borrow_mut().set_frame(Rect { x: 0., y: 0., width, height });
-        self.dispathcer.dispatch_layout();
+        self.dispathcer.dispatch_layout()
     }
 
     fn render(&self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
         self.dispathcer.dispatch_render(ctx, dpr, next)
     }
 
-    fn pointer_down(&mut self, x: f64, y: f64) {
-        self.dispathcer.dispatch_pointer_down(x, y);
+    fn pointer_down(&mut self, x: f64, y: f64) -> Result<(), JsValue> {
+        self.dispathcer.dispatch_pointer_down(x, y)
     }
 
-    fn pointer_up(&mut self, x: f64, y: f64) {
-        self.dispathcer.dispatch_pointer_up(x, y);
+    fn pointer_up(&mut self, x: f64, y: f64) -> Result<(), JsValue> {
+        self.dispathcer.dispatch_pointer_up(x, y)
     }
 }
 

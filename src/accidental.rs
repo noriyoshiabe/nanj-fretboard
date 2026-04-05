@@ -17,9 +17,6 @@ impl View for Accidental {
         self.frame = frame
     }
 
-    fn layout(&mut self) {
-    }
-
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, _: &mut bool) -> Result<(), JsValue> {
         ctx.set_stroke_style_str("gray");
         ctx.set_line_width(1.0 * dpr);
@@ -54,13 +51,14 @@ impl View for Accidental {
         Ok(())
     }
 
-    fn pointer_down(&mut self, _: Point, _: &mut bool) -> bool {
+    fn pointer_down(&mut self, _: Point, _: &mut bool) -> Result<bool, JsValue> {
         self.active = true;
-        true
+        Ok(true)
     }
 
-    fn pointer_up(&mut self, _: Point, _: &mut bool) {
-        self.active = false
+    fn pointer_up(&mut self, _: Point, _: &mut bool) -> Result<(), JsValue> {
+        self.active = false;
+        Ok(())
     }
 
 }

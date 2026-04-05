@@ -67,14 +67,21 @@ pub trait View {
         Rect { x: 0., y: 0., ..self.frame() }
     }
 
-    fn layout(&mut self);
-    fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue>;
-
-    fn pointer_down(&mut self, _p: Point, _layout: &mut bool) -> bool {
-        false
+    fn layout(&mut self) -> Result<(), JsValue> {
+        Ok(())
     }
 
-    fn pointer_up(&mut self, _p: Point, _layout: &mut bool) {}
+    fn draw(&mut self, _ctx: &CanvasRenderingContext2d, _dpr: f64, _next: &mut bool) -> Result<(), JsValue> {
+        Ok(())
+    }
+
+    fn pointer_down(&mut self, _p: Point, _layout: &mut bool) -> Result<bool, JsValue> {
+        Ok(false)
+    }
+
+    fn pointer_up(&mut self, _p: Point, _layout: &mut bool) -> Result<(), JsValue> {
+        Ok(())
+    }
 
     fn children(&self) -> &[Rc<RefCell<dyn View>>] {
         &[]

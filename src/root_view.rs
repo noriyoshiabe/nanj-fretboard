@@ -26,7 +26,7 @@ impl View for RootView {
         self.frame = frame
     }
 
-    fn layout(&mut self) {
+    fn layout(&mut self) -> Result<(), JsValue> {
         let width = (self.frame.width * 0.25).min(self.frame.height * 0.15);
         let height = width / (10. / 3.);
         let x = (self.frame.width - width) / 2.;
@@ -57,6 +57,8 @@ impl View for RootView {
         self.accidental.borrow_mut().set_frame(f_acccidental);
         self.fretboard.borrow_mut().set_frame(f_fretboard);
         self.keyboard.borrow_mut().set_frame(f_keyboard);
+
+        Ok(())
     }
 
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: f64, _: &mut bool) -> Result<(), JsValue> {

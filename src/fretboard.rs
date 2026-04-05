@@ -23,12 +23,14 @@ impl View for Fretboard {
         self.frame = frame
     }
 
-    fn layout(&mut self) {
+    fn layout(&mut self) -> Result<(), JsValue> {
         let s = self.frame.width / 13. * 0.8;
 
         for nanj in self.nanjs.iter() {
             nanj.borrow_mut().set_frame(Rect { x: 0., y: 0., width: s, height: s});
         }
+
+        Ok(())
     }
 
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, _: &mut bool) -> Result<(), JsValue> {
@@ -93,15 +95,15 @@ impl View for Fretboard {
     }
 
     // temporary
-    fn pointer_down(&mut self, _: Point, layout: &mut bool) -> bool {
+    fn pointer_down(&mut self, _: Point, layout: &mut bool) -> Result<bool, JsValue> {
         // temporary
-        let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone()).unwrap())); // TODO
+        let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone())?)); // TODO
         self.children.push(nanj.clone());
         self.nanjs.push(nanj);
 
         *layout = true;
 
-        true
+        Ok(true)
     }
 }
 
