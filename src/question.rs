@@ -5,7 +5,7 @@ use rand::rng;
 use wasm_bindgen::prelude::*;
 use crate::task_queue::TaskQueue;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct QuestionItem {
     pub string: u8,
     pub fret: u8,
@@ -16,6 +16,7 @@ pub struct QuestionItem {
 pub enum QuestionEvent {
     New(QuestionItem),
     Answer { correct: bool },
+    AccidentalChange { accidental: bool },
 }
 
 pub trait QuestionObserver {
@@ -80,20 +81,30 @@ impl Question {
 
         if correct {
             if self.lot_items.is_empty() {
-                self.lot_items = self.items.iter().filter(|i| {
-                    if self.accidental {
-                        true
-                    } else {
-                        !i.note.contains("#")
-                    }
-                }).cloned().collect();
-
-                self.lot_items.shuffle(&mut rng());
+                self.reset_lot_items();
             }
 
             self.current_item = self.lot_items.pop().expect("definitely exists");
             self.notify_event(QuestionEvent::New(self.current_item));
         }
+    }
+
+    pub fn toggle_accidental(&mut self) {
+        self.accidental = !self.accidental;
+        self.reset_lot_items();
+        self.notify_event(QuestionEvent::AccidentalChange{ accidental: self.accidental });
+    }
+
+    fn reset_lot_items(&mut self) {
+        self.lot_items = self.items.iter().filter(|i| {
+            if self.accidental {
+                true
+            } else {
+                !i.note.contains("#")
+            }
+        }).cloned().collect();
+        self.lot_items = self.lot_items.iter().filter(|&i| *i != self.current_item ).cloned().collect();
+        self.lot_items.shuffle(&mut rng());
     }
 }
 

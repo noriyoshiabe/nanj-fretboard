@@ -1,11 +1,16 @@
+use std::cell::RefCell;
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::view::{Rect, View, Point};
 
+use crate::question::{Question, QuestionEvent, QuestionObserver};
+
 pub struct Accidental {
     frame: Rect,
-    active: bool, // temporary
+    question: Rc<RefCell<Question>>,
+    active: bool,
 }
 
 impl View for Accidental {
@@ -19,10 +24,10 @@ impl View for Accidental {
 
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, _: &mut bool) -> Result<(), JsValue> {
         ctx.set_stroke_style_str("gray");
-        ctx.set_line_width(1.0 * dpr);
+        ctx.set_line_width(2.0 * dpr);
 
         if !self.active {
-           ctx.set_global_alpha(0.5);
+           ctx.set_global_alpha(0.3);
         }
 
         ctx.begin_path();
@@ -52,21 +57,26 @@ impl View for Accidental {
     }
 
     fn pointer_down(&mut self, _: Point) -> Result<bool, JsValue> {
-        self.active = true;
+        self.question.borrow_mut().toggle_accidental();
         Ok(true)
     }
+}
 
-    fn pointer_up(&mut self, _: Point) -> Result<(), JsValue> {
-        self.active = false;
+impl QuestionObserver for Accidental {
+    fn on_notify_event(&mut self, event: QuestionEvent) -> Result<(), JsValue> {
+        if let QuestionEvent::AccidentalChange { accidental } = event {
+            self.active = accidental;
+        }
+
         Ok(())
     }
-
 }
 
 impl Accidental {
-    pub fn new() -> Self {
+    pub fn new(question: Rc<RefCell<Question>>) -> Self {
         Self {
             frame: Rect::default(),
+            question,
             active: false,
         }
     }
