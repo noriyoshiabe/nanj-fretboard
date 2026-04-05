@@ -4,6 +4,7 @@ use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::view::{Rect, View};
+use crate::asset::Asset;
 use crate::accidental::Accidental;
 use crate::fretboard::Fretboard;
 use crate::keyboard::Keyboard;
@@ -14,6 +15,7 @@ pub struct RootView {
     accidental: Rc<RefCell<Accidental>>,
     fretboard: Rc<RefCell<Fretboard>>,
     keyboard: Rc<RefCell<Keyboard>>,
+    asset: Rc<Asset>,
 }
 
 impl View for RootView {
@@ -73,13 +75,13 @@ impl View for RootView {
 }
 
 impl RootView {
-    pub fn new() -> Self {
+    pub fn new(asset: Rc<Asset>) -> Self {
         let mut children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
 
         let accidental = Rc::new(RefCell::new(Accidental::new()));
         children.push(accidental.clone());
 
-        let fretboard = Rc::new(RefCell::new(Fretboard::new()));
+        let fretboard = Rc::new(RefCell::new(Fretboard::new(asset.clone())));
         children.push(fretboard.clone());
 
         let keyboard = Rc::new(RefCell::new(Keyboard::new()));
@@ -91,6 +93,7 @@ impl RootView {
             accidental,
             fretboard,
             keyboard,
+            asset,
         }
     }
 }

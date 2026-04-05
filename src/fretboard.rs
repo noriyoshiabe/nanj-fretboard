@@ -1,10 +1,17 @@
+use std::cell::RefCell;
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
+use crate::asset::Asset;
+use crate::nanj::NanJ;
 use crate::view::{Rect, View};
 
 pub struct Fretboard {
     frame: Rect,
+    children: Vec<Rc<RefCell<dyn View>>>,
+    nanjs: Vec<Rc<RefCell<NanJ>>>,
+    asset: Rc<Asset>,
 }
 
 impl View for Fretboard {
@@ -17,6 +24,11 @@ impl View for Fretboard {
     }
 
     fn layout(&mut self) {
+        let s = self.frame.width / 13. * 0.8;
+
+        for nanj in self.nanjs.iter() {
+            nanj.borrow_mut().set_frame(Rect { x: 0., y: 0., width: s, height: s});
+        }
     }
 
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, dpr: f64, _: &mut bool) -> Result<(), JsValue> {
@@ -75,12 +87,27 @@ impl View for Fretboard {
 
         Ok(())
     }
+
+    fn children(&self) -> &[Rc<RefCell<dyn View>>] {
+        self.children.as_slice()
+    }
 }
 
 impl Fretboard {
-    pub fn new() -> Self {
+    pub fn new(asset: Rc<Asset>) -> Self {
+        let mut children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
+        let mut nanjs: Vec<Rc<RefCell<NanJ>>> = Vec::new();
+
+        // temporary
+        let nanj = Rc::new(RefCell::new(NanJ::try_new(asset.clone()).unwrap())); // TODO
+        children.push(nanj.clone());
+        nanjs.push(nanj);
+
         Self {
             frame: Rect::default(),
+            children,
+            nanjs,
+            asset,
         }
     }
 }

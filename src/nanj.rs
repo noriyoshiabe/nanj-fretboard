@@ -1,0 +1,67 @@
+use std::rc::Rc;
+use wasm_bindgen::prelude::*;
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, Performance};
+
+use crate::asset::Asset;
+use crate::view::{Point, Rect, View};
+
+pub struct NanJ {
+    frame: Rect,
+    source_canvas: HtmlCanvasElement,
+    performance: Performance,
+    started_at: f64,
+    asset: Rc<Asset>,
+}
+
+impl View for NanJ {
+    fn frame(&self) -> Rect {
+        self.frame
+    }
+
+    fn set_frame(&mut self, frame: Rect) {
+        self.frame = frame
+    }
+
+    fn layout(&mut self) {
+        self.source_canvas = self.asset.nanj_normal.source_canvas(self.frame.width, self.frame.height).unwrap(); // TODO
+    }
+
+    fn draw(&mut self, ctx: &CanvasRenderingContext2d, _: f64, next: &mut bool) -> Result<(), JsValue> {
+        let elapsed = self.performance.now() - self.started_at;
+
+        let y = elapsed.min(1000.0) * 0.1;
+
+        ctx.draw_image_with_html_canvas_element_and_dw_and_dh(&self.source_canvas, 0.0, y, self.frame.width, self.frame.height)?;
+
+        if 1000.0 > elapsed {
+            *next = true
+        }
+
+        Ok(())
+    }
+
+    fn pointer_down(&mut self, _: Point) -> bool {
+        self.started_at = self.performance.now();
+        true
+    }
+
+    fn pointer_up(&mut self, _: Point) {
+        self.started_at = self.performance.now();
+    }
+}
+
+impl NanJ {
+    pub fn try_new(asset: Rc<Asset>) -> Result<Self, JsValue> {
+        let source_canvas = asset.nanj_normal.source_canvas(0., 0.)?;
+        let performance = web_sys::window().ok_or("window not exists.")?.performance().ok_or("performance not exists.")?;
+        let started_at = performance.now();
+
+        Ok(Self {
+            frame: Rect::default(),
+            source_canvas,
+            performance,
+            started_at,
+            asset,
+        })
+    }
+}

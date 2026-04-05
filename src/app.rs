@@ -3,6 +3,7 @@ use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
+use crate::asset::Asset;
 use crate::dispatcher::Dispatcher;
 use crate::root_view::RootView;
 use crate::runtime::AppDelegate;
@@ -40,8 +41,9 @@ impl AppDelegate for App {
 }
 
 impl App {
-    pub fn new(canvas: HtmlCanvasElement) -> Result<Self, JsValue> {
-        let root_view = Rc::new(RefCell::new(RootView::new()));
+    pub fn try_new(canvas: HtmlCanvasElement) -> Result<Self, JsValue> {
+        let asset = Asset::try_new()?;
+        let root_view = Rc::new(RefCell::new(RootView::new(Rc::new(asset))));
         let dispathcer = Dispatcher::new(root_view.clone());
 
         Ok(Self {
