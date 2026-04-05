@@ -2,19 +2,20 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d};
+use std::collections::HashMap;
 
 use crate::view::{Point, View};
 
 pub struct Dispatcher {
     root_view: Rc<RefCell<dyn View>>,
-    pointing_view: Option<Rc<RefCell<dyn View>>>,
+    pointing_views: HashMap<i32, Rc<RefCell<dyn View>>>,
 }
 
 impl Dispatcher {
     pub fn new(root_view: Rc<RefCell<dyn View>>) -> Self {
         Self {
             root_view,
-            pointing_view: None,
+            pointing_views: HashMap::new(),
         }
     }
 
@@ -53,8 +54,10 @@ impl Dispatcher {
         Ok(())
     }
 
-    pub fn dispatch_pointer_down(&mut self, x: f64, y: f64) -> Result<(), JsValue> {
-        self.pointing_view = self._dispatch_pointer_down(Rc::clone(&self.root_view), Point { x, y })?;
+    pub fn dispatch_pointer_down(&mut self, id: i32, x: f64, y: f64) -> Result<(), JsValue> {
+        if let Some(pointing_view) = self._dispatch_pointer_down(Rc::clone(&self.root_view), Point { x, y })? {
+            self.pointing_views.insert(id, pointing_view);
+        }
         Ok(())
     }
 
@@ -84,10 +87,11 @@ impl Dispatcher {
         Ok(None)
     }
 
-    pub fn dispatch_pointer_up(&mut self, x: f64, y: f64) -> Result<(), JsValue> {
-        if let Some(pointing_view) = &self.pointing_view {
+    pub fn dispatch_pointer_up(&mut self, id: i32, x: f64, y: f64) -> Result<(), JsValue> {
+        if let Some(pointing_view) = self.pointing_views.get(&id) {
             let p = self._calc_local_point(Rc::clone(&self.root_view), Rc::clone(&pointing_view), Point { x, y });
             pointing_view.borrow_mut().pointer_up(p)?;
+            self.pointing_views.remove(&id);
         }
 
         Ok(())

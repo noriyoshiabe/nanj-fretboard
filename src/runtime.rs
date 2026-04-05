@@ -8,8 +8,8 @@ pub trait AppDelegate {
     fn start(&mut self) -> Result<(), JsValue>;
     fn layout(&self) -> Result<(), JsValue>;
     fn render(&self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue>;
-    fn pointer_down(&mut self, x: f64, y: f64) -> Result<(), JsValue>;
-    fn pointer_up(&mut self, x: f64, y: f64) -> Result<(), JsValue>;
+    fn pointer_down(&mut self, id: i32, x: f64, y: f64) -> Result<(), JsValue>;
+    fn pointer_up(&mut self, id: i32, x: f64, y: f64) -> Result<(), JsValue>;
 }
 
 pub struct Runtime {}
@@ -61,7 +61,7 @@ impl Runtime {
         Self::add_event_listener(Rc::clone(&rt_ctx), canvas.clone(), "pointerdown", move |e: JsValue| -> Result<(), JsValue> {
             if let Some(rc) = weak_rc.upgrade() {
                 let e = e.dyn_into::<PointerEvent>()?;
-                rc.borrow_mut().app.pointer_down(e.offset_x() as f64 * dpr, e.offset_y() as f64 * dpr).unwrap_or_else(|e| {
+                rc.borrow_mut().app.pointer_down(e.pointer_id(), e.offset_x() as f64 * dpr, e.offset_y() as f64 * dpr).unwrap_or_else(|e| {
                     web_sys::console::error_1(&e);
                 });
             }
@@ -72,7 +72,7 @@ impl Runtime {
         Self::add_event_listener(Rc::clone(&rt_ctx), canvas.clone(), "pointerup", move |e: JsValue| -> Result<(), JsValue> {
             if let Some(rc) = weak_rc.upgrade() {
                 let e = e.dyn_into::<PointerEvent>()?;
-                rc.borrow_mut().app.pointer_up(e.offset_x() as f64 * dpr, e.offset_y() as f64 * dpr).unwrap_or_else(|e| {
+                rc.borrow_mut().app.pointer_up(e.pointer_id(), e.offset_x() as f64 * dpr, e.offset_y() as f64 * dpr).unwrap_or_else(|e| {
                     web_sys::console::error_1(&e);
                 });
             }

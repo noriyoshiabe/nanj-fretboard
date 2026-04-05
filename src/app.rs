@@ -38,12 +38,12 @@ impl AppDelegate for App {
         self.dispathcer.dispatch_render(ctx, dpr, next)
     }
 
-    fn pointer_down(&mut self, x: f64, y: f64) -> Result<(), JsValue> {
-        self.dispathcer.dispatch_pointer_down(x, y)
+    fn pointer_down(&mut self, id: i32, x: f64, y: f64) -> Result<(), JsValue> {
+        self.dispathcer.dispatch_pointer_down(id, x, y)
     }
 
-    fn pointer_up(&mut self, x: f64, y: f64) -> Result<(), JsValue> {
-        self.dispathcer.dispatch_pointer_up(x, y)
+    fn pointer_up(&mut self, id: i32, x: f64, y: f64) -> Result<(), JsValue> {
+        self.dispathcer.dispatch_pointer_up(id, x, y)
     }
 }
 
