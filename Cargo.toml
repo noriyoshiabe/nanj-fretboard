@@ -22,6 +22,7 @@ web-sys = {
     "CssStyleDeclaration",
     "Performance",
     "PointerEvent",
+    "TextMetrics",
     "console",
   ]
 }

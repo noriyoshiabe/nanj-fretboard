@@ -26,7 +26,7 @@ impl View for RootView {
     }
 
     fn layout(&mut self) {
-        let width = self.frame.width.min(self.frame.height) * 0.2;
+        let width = (self.frame.width * 0.25).min(self.frame.height * 0.2);
         let height = width / (10. / 3.);
         let x = (self.frame.width - width) / 2.;
 

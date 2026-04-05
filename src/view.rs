@@ -42,6 +42,18 @@ impl Rect {
         }
     }
 
+    pub fn left(&self) -> f64 {
+        self.x
+    }
+
+    pub fn right(&self) -> f64 {
+        self.x + self.width
+    }
+
+    pub fn top(&self) -> f64 {
+        self.y
+    }
+
     pub fn bottom(&self) -> f64 {
         self.y + self.height
     }
@@ -50,6 +62,11 @@ impl Rect {
 pub trait View {
     fn frame(&self) -> Rect;
     fn set_frame(&mut self, frame: Rect);
+
+    fn bounds(&self) -> Rect {
+        Rect { x: 0., y: 0., ..self.frame() }
+    }
+
     fn layout(&mut self);
     fn draw(&mut self, ctx: &CanvasRenderingContext2d, next: &mut bool) -> Result<(), JsValue>;
 
