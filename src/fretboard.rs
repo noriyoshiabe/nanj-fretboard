@@ -53,7 +53,8 @@ impl View for Fretboard {
             ctx.line_to(self.frame.width, y);
         }
 
-        for i in 2..14 {
+        for i in 0..14 {
+            if i == 1 { continue }
             let x = i as f64 * self.frame.width / 13.;
             ctx.move_to(x, 0.);
             ctx.line_to(x, self.frame.height);
@@ -66,7 +67,7 @@ impl View for Fretboard {
 
         ctx.begin_path();
 
-        let x = 1.0 * self.frame.width / 13.;
+        let x = 1. * self.frame.width / 13.;
         ctx.move_to(x, 0.);
         ctx.line_to(x, self.frame.height);
 
