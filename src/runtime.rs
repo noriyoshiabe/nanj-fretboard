@@ -14,26 +14,12 @@ pub trait AppDelegate {
 
 pub struct Runtime {}
 
-struct RuntimeContext<T: AppDelegate> {
-    app: T,
-    canvas: HtmlCanvasElement,
-    is_running: bool,
-    _listeners: Vec<Closure<dyn FnMut(JsValue)>>,
-    animation_frame_callback: Closure<dyn FnMut()>,
-}
-
 impl Runtime {
     pub fn run(canvas: HtmlCanvasElement, app: impl AppDelegate + 'static) -> Result<(), JsValue> {
         let ctx = canvas.get_context("2d")?.ok_or("could not get 2d context.")?.
             dyn_into::<web_sys::CanvasRenderingContext2d>()?;
 
-        let rt_ctx = Rc::new(RefCell::new(RuntimeContext {
-            app,
-            canvas: canvas.clone(),
-            is_running: false,
-            _listeners: Vec::new(),
-            animation_frame_callback: Closure::wrap(Box::new(|| {})),
-        }));
+        let rt_ctx = RuntimeContext::new(canvas.clone(), app);
 
         let window = web_sys::window().ok_or("window not exists.")?;
         let dpr = window.device_pixel_ratio();
@@ -159,5 +145,25 @@ impl Runtime {
         style.set_property("height", &format!("{}px", height))?;
 
         Ok(())
+    }
+}
+
+struct RuntimeContext<T: AppDelegate> {
+    app: T,
+    canvas: HtmlCanvasElement,
+    is_running: bool,
+    _listeners: Vec<Closure<dyn FnMut(JsValue)>>,
+    animation_frame_callback: Closure<dyn FnMut()>,
+}
+
+impl<T: AppDelegate> RuntimeContext<T> {
+    fn new(canvas: HtmlCanvasElement, app: T) -> Rc<RefCell<Self>> {
+        Rc::new(RefCell::new(Self {
+            app,
+            canvas: canvas.clone(),
+            is_running: false,
+            _listeners: Vec::new(),
+            animation_frame_callback: Closure::wrap(Box::new(|| {})),
+        }))
     }
 }

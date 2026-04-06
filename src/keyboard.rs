@@ -51,7 +51,7 @@ impl View for Keyboard {
 }
 
 impl Keyboard {
-    pub fn new(question: Rc<RefCell<Question>>) -> Self {
+    pub fn new(question: Rc<RefCell<Question>>) -> Rc<RefCell<Self>> {
         let mut children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
         let mut normal_pads: Vec<Rc<RefCell<NotePad>>> = Vec::new();
         let mut accidental_pads: Vec<Rc<RefCell<NotePad>>> = Vec::new();
@@ -67,7 +67,7 @@ impl Keyboard {
         ];
 
         for note in notes {
-            let note_pad = Rc::new(RefCell::new(NotePad::new(question.clone(), note.to_string(), false)));
+            let note_pad = NotePad::new(question.clone(), note.to_string(), false);
             normal_pads.push(note_pad.clone());
             children.push(note_pad);
         }
@@ -81,17 +81,17 @@ impl Keyboard {
         ];
 
         for note in notes {
-            let note_pad = Rc::new(RefCell::new(NotePad::new(question.clone(), note.to_string(), true)));
+            let note_pad = NotePad::new(question.clone(), note.to_string(), true);
             accidental_pads.push(note_pad.clone());
             children.push(note_pad);
         }
 
-        Self {
+        Rc::new(RefCell::new(Self {
             frame: Rect::default(),
             children,
             normal_pads,
             accidental_pads,
-        }
+        }))
     }
 }
 
@@ -151,13 +151,13 @@ impl View for NotePad {
 }
 
 impl NotePad {
-    pub fn new(question: Rc<RefCell<Question>>, note: String, accidental: bool) -> Self {
-        Self {
+    pub fn new(question: Rc<RefCell<Question>>, note: String, accidental: bool) -> Rc<RefCell<Self>> {
+         Rc::new(RefCell::new(Self {
             frame: Rect::default(),
             note,
             accidental,
             active: false,
             question,
-        }
+        }))
     }
 }

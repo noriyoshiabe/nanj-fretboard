@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 
 type Task = Box<dyn FnOnce() -> Result<(), JsValue>>;
@@ -8,10 +9,10 @@ pub struct TaskQueue {
 }
 
 impl TaskQueue {
-    pub fn new() -> Self {
-        Self {
+    pub fn new() -> Rc<RefCell<Self>> {
+        Rc::new(RefCell::new(Self {
             queue: RefCell::new(Vec::new()),
-        }
+        }))
     }
 
     pub fn enqueue<F>(&self, task: F)

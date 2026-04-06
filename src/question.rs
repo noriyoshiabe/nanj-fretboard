@@ -33,7 +33,7 @@ pub struct Question {
 }
 
 impl Question {
-    pub fn new(task_queue: Rc<RefCell<TaskQueue>>) -> Self {
+    pub fn new(task_queue: Rc<RefCell<TaskQueue>>) -> Rc<RefCell<Self>> {
         let observers: Vec<Weak<RefCell<dyn QuestionObserver>>> = Vec::new();
         let items = build_question_items();
         let mut lot_items: Vec<QuestionItem> = items.iter().filter(|&i| !i.note.contains("#")).cloned().collect();
@@ -41,14 +41,14 @@ impl Question {
         lot_items.shuffle(&mut rng());
         let current_item = lot_items.pop().expect("definitely exists");
 
-        Self {
+        Rc::new(RefCell::new(Self {
             observers,
             task_queue,
             items,
             lot_items,
             current_item,
             accidental: false,
-        }
+        }))
     }
 
     pub fn add_observer(&mut self, observer: Rc<RefCell<dyn QuestionObserver>>) {

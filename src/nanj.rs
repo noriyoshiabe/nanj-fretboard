@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, Performance};
@@ -116,17 +117,17 @@ impl QuestionObserver for NanJ {
 }
 
 impl NanJ {
-    pub fn try_new(asset: Rc<Asset>, question_item: QuestionItem) -> Result<Self, JsValue> {
+    pub fn try_new(asset: Rc<Asset>, question_item: QuestionItem) -> Result<Rc<RefCell<Self>>, JsValue> {
         let performance = web_sys::window().ok_or("window not exists.")?.performance().ok_or("performance not exists.")?;
         let state = NanJState::Normal;
 
-        Ok(Self {
+        Ok(Rc::new(RefCell::new(Self {
             frame: Rect::default(),
             performance,
             state,
             asset,
             question_item,
-        })
+        })))
     }
 
     pub fn is_gone(&self) -> bool {

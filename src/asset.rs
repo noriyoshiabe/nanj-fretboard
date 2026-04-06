@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use image::GenericImageView;
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
@@ -9,16 +10,16 @@ pub struct Asset {
 }
 
 impl Asset {
-    pub fn try_new() -> Result<Self, JsValue> {
+    pub fn try_new() -> Result<Rc<Self>, JsValue> {
         let nanj_normal = source_canvas(include_bytes!("../assets/normal.png"))?;
         let nanj_happy = source_canvas(include_bytes!("../assets/happy.png"))?;
         let nanj_angry = source_canvas(include_bytes!("../assets/angry.png"))?;
 
-        Ok(Self {
+        Ok(Rc::new(Self {
             nanj_normal,
             nanj_happy,
             nanj_angry,
-        })
+        }))
     }
 }
 

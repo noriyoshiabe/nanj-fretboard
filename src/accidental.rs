@@ -73,11 +73,11 @@ impl QuestionObserver for Accidental {
 }
 
 impl Accidental {
-    pub fn new(question: Rc<RefCell<Question>>) -> Self {
-        Self {
+    pub fn new(question: Rc<RefCell<Question>>) -> Rc<RefCell<Self>> {
+        Rc::new(RefCell::new(Self {
             frame: Rect::default(),
             question,
             active: false,
-        }
+        }))
     }
 }

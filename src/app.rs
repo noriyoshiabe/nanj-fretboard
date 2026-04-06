@@ -49,10 +49,10 @@ impl AppDelegate for App {
 
 impl App {
     pub fn try_new(canvas: HtmlCanvasElement) -> Result<Self, JsValue> {
-        let asset = Rc::new(Asset::try_new()?);
-        let task_queue = Rc::new(RefCell::new(TaskQueue::new()));
-        let question = Rc::new(RefCell::new(Question::new(task_queue.clone())));
-        let root_view = Rc::new(RefCell::new(RootView::new(asset, question.clone())));
+        let asset = Asset::try_new()?;
+        let task_queue = TaskQueue::new();
+        let question = Question::new(task_queue.clone());
+        let root_view = RootView::new(asset, question.clone());
         let dispathcer = Dispatcher::new(root_view.clone());
 
         Ok(Self {

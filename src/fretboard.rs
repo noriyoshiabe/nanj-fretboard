@@ -106,7 +106,7 @@ impl View for Fretboard {
 impl QuestionObserver for Fretboard {
     fn on_notify_event(&mut self, event: QuestionEvent) -> Result<(), JsValue> {
         if let QuestionEvent::New(question_item) = event {
-            let nanj = Rc::new(RefCell::new(NanJ::try_new(self.asset.clone(), question_item)?));
+            let nanj = NanJ::try_new(self.asset.clone(), question_item)?;
             self.children.push(nanj.clone());
             self.nanjs.push(nanj.clone());
 
@@ -128,16 +128,16 @@ impl QuestionObserver for Fretboard {
 }
 
 impl Fretboard {
-    pub fn new(asset: Rc<Asset>, question: Rc<RefCell<Question>>) -> Self {
+    pub fn new(asset: Rc<Asset>, question: Rc<RefCell<Question>>) -> Rc<RefCell<Self>> {
         let children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
         let nanjs: Vec<Rc<RefCell<NanJ>>> = Vec::new();
 
-        Self {
+        Rc::new(RefCell::new(Self {
             frame: Rect::default(),
             children,
             nanjs,
             asset,
             question,
-        }
+        }))
     }
 }
