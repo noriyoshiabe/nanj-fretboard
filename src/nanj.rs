@@ -128,4 +128,8 @@ impl NanJ {
             question_item,
         })
     }
+
+    pub fn is_gone(&self) -> bool {
+        self.state == NanJState::Gone
+    }
 }

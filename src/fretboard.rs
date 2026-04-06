@@ -115,6 +115,14 @@ impl QuestionObserver for Fretboard {
             self.layout()?;
         }
 
+        let gone_nanjs: Vec<Rc<RefCell<NanJ>>> = self.nanjs.iter().filter(|n| n.borrow().is_gone()).cloned().collect();
+        for nanj in gone_nanjs.iter() {
+            if let Some(index) = self.nanjs.iter().position(|n| Rc::ptr_eq(n, nanj)) {
+                self.children.remove(index);
+                self.nanjs.remove(index);
+            };
+        }
+
         Ok(())
     }
 }
