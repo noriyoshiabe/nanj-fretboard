@@ -1,4 +1,5 @@
 use wasm_bindgen::prelude::*;
+use web_sys::{HtmlCanvasElement};
 
 mod app;
 mod dispatcher;
@@ -24,7 +25,7 @@ pub fn run(canvas_id: &str) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
     let canvas = Runtime::init_canvas(canvas_id)?;
-    let app = App::try_new(canvas.clone())?;
+    let app = App::try_new(HtmlCanvasElement::clone(&canvas))?;
 
     Runtime::run(canvas, app)?;
 

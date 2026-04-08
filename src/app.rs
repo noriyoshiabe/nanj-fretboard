@@ -51,9 +51,10 @@ impl App {
     pub fn try_new(canvas: HtmlCanvasElement) -> Result<Self, JsValue> {
         let asset = Asset::try_new()?;
         let task_queue = TaskQueue::new();
-        let question = Question::new(task_queue.clone());
-        let root_view = RootView::new(asset, question.clone());
-        let dispathcer = Dispatcher::new(root_view.clone());
+        let question = Question::new(Rc::clone(&task_queue));
+        let root_view = RootView::new(asset, Rc::clone(&question));
+        let root_view_rc = Rc::clone(&root_view);
+        let dispathcer = Dispatcher::new(root_view_rc);
 
         Ok(Self {
             canvas,

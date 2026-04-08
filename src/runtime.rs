@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlElement, PointerEvent};
+use web_sys::{Window, CanvasRenderingContext2d, HtmlCanvasElement, HtmlElement, PointerEvent};
 
 pub trait AppDelegate {
     fn start(&mut self) -> Result<(), JsValue>;
@@ -19,7 +19,7 @@ impl Runtime {
         let ctx = canvas.get_context("2d")?.ok_or("could not get 2d context.")?.
             dyn_into::<web_sys::CanvasRenderingContext2d>()?;
 
-        let rt_ctx = RuntimeContext::new(canvas.clone(), app);
+        let rt_ctx = RuntimeContext::new(HtmlCanvasElement::clone(&canvas), app);
 
         let window = web_sys::window().ok_or("window not exists.")?;
         let dpr = window.device_pixel_ratio();
@@ -44,7 +44,7 @@ impl Runtime {
         }) as Box<dyn FnMut()>);
 
         let weak_rc = Rc::downgrade(&rt_ctx);
-        Self::add_event_listener(Rc::clone(&rt_ctx), canvas.clone(), "pointerdown", move |e: JsValue| -> Result<(), JsValue> {
+        Self::add_event_listener(Rc::clone(&rt_ctx), HtmlCanvasElement::clone(&canvas), "pointerdown", move |e: JsValue| -> Result<(), JsValue> {
             if let Some(rc) = weak_rc.upgrade() {
                 let e = e.dyn_into::<PointerEvent>()?;
                 rc.borrow_mut().app.pointer_down(e.pointer_id(), e.offset_x() as f64 * dpr, e.offset_y() as f64 * dpr).unwrap_or_else(|e| {
@@ -55,7 +55,7 @@ impl Runtime {
         })?;
 
         let weak_rc = Rc::downgrade(&rt_ctx);
-        Self::add_event_listener(Rc::clone(&rt_ctx), canvas.clone(), "pointerup", move |e: JsValue| -> Result<(), JsValue> {
+        Self::add_event_listener(Rc::clone(&rt_ctx), HtmlCanvasElement::clone(&canvas), "pointerup", move |e: JsValue| -> Result<(), JsValue> {
             if let Some(rc) = weak_rc.upgrade() {
                 let e = e.dyn_into::<PointerEvent>()?;
                 rc.borrow_mut().app.pointer_up(e.pointer_id(), e.offset_x() as f64 * dpr, e.offset_y() as f64 * dpr).unwrap_or_else(|e| {
@@ -66,7 +66,7 @@ impl Runtime {
         })?;
 
         let weak_rc = Rc::downgrade(&rt_ctx);
-        Self::add_event_listener(Rc::clone(&rt_ctx), window.clone(), "resize", move |_: JsValue| -> Result<(), JsValue> {
+        Self::add_event_listener(Rc::clone(&rt_ctx), Window::clone(&window), "resize", move |_: JsValue| -> Result<(), JsValue> {
             if let Some(rc) = weak_rc.upgrade() {
                 Self::resize_canvas(&rc.borrow().canvas)?;
                 rc.borrow_mut().app.layout()?;
@@ -160,7 +160,7 @@ impl<T: AppDelegate> RuntimeContext<T> {
     fn new(canvas: HtmlCanvasElement, app: T) -> Rc<RefCell<Self>> {
         Rc::new(RefCell::new(Self {
             app,
-            canvas: canvas.clone(),
+            canvas: HtmlCanvasElement::clone(&canvas),
             is_running: false,
             _listeners: Vec::new(),
             animation_frame_callback: Closure::wrap(Box::new(|| {})),

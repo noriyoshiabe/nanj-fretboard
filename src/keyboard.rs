@@ -54,12 +54,12 @@ impl Keyboard {
 
         let notes = ["C", "D", "E", "F", "G", "A", "B"];
         for note in notes {
-            children.push(NotePad::new(question.clone(), note.to_string(), false));
+            children.push(NotePad::new(Rc::clone(&question), note.to_string(), false));
         }
 
         let notes = ["C#", "D#", "F#", "G#", "A#"];
         for note in notes {
-            children.push(NotePad::new(question.clone(), note.to_string(), true));
+            children.push(NotePad::new(Rc::clone(&question), note.to_string(), true));
         }
 
         Rc::new(RefCell::new(Self {

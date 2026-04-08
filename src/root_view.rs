@@ -84,17 +84,20 @@ impl RootView {
     pub fn new(asset: Rc<Asset>, question: Rc<RefCell<Question>>) -> Rc<RefCell<Self>> {
         let mut children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
 
-        let accidental = Accidental::new(question.clone());
-        children.push(accidental.clone());
+        let accidental = Accidental::new(Rc::clone(&question));
+        let accidental_rc = Rc::clone(&accidental);
+        children.push(accidental_rc);
 
-        let keyboard = Keyboard::new(question.clone());
-        children.push(keyboard.clone());
+        let keyboard = Keyboard::new(Rc::clone(&question));
+        let keyboard_rc = Rc::clone(&keyboard);
+        children.push(keyboard_rc);
 
-        let fretboard = Fretboard::new(asset, question.clone());
-        children.push(fretboard.clone());
+        let fretboard = Fretboard::new(asset, Rc::clone(&question));
+        let fretboard_rc = Rc::clone(&fretboard);
+        children.push(fretboard_rc);
 
-        question.borrow_mut().add_observer(accidental.clone());
-        question.borrow_mut().add_observer(fretboard.clone());
+        question.borrow_mut().add_observer(accidental);
+        question.borrow_mut().add_observer(fretboard);
 
         Rc::new(RefCell::new(Self {
             frame: Rect::default(),

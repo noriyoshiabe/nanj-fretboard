@@ -59,7 +59,7 @@ impl Question {
         self.observers.retain(|weak| weak.strong_count() > 0);
 
         for weak in self.observers.iter() {
-            let weac_c = weak.clone();
+            let weac_c = Weak::clone(weak);
 
             self.task_queue.borrow_mut().enqueue(move || -> Result<(), JsValue> {
                 if let Some(rc) = weac_c.upgrade() {
