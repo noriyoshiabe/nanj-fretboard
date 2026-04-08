@@ -20,24 +20,24 @@ impl Dispatcher {
     }
 
     pub fn dispatch_layout(&self) -> Result<(), JsValue> {
-        self._dispatch_layout(Rc::clone(&self.root_view))
+        self.visit_layout(Rc::clone(&self.root_view))
     }
 
-    fn _dispatch_layout(&self, parent: Rc<RefCell<dyn View>>) -> Result<(), JsValue> {
+    fn visit_layout(&self, parent: Rc<RefCell<dyn View>>) -> Result<(), JsValue> {
         parent.borrow_mut().layout()?;
 
         for child in parent.borrow().children().iter() {
-            self._dispatch_layout(Rc::clone(&child))?;
+            self.visit_layout(Rc::clone(&child))?;
         }
 
         Ok(())
     }
 
     pub fn dispatch_render(&self, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
-        self._dispatch_render(Rc::clone(&self.root_view), ctx, dpr, next)
+        self.visit_render(Rc::clone(&self.root_view), ctx, dpr, next)
     }
 
-    fn _dispatch_render(&self, parent: Rc<RefCell<dyn View>>, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
+    fn visit_render(&self, parent: Rc<RefCell<dyn View>>, ctx: &CanvasRenderingContext2d, dpr: f64, next: &mut bool) -> Result<(), JsValue> {
         parent.borrow_mut().draw(ctx, dpr, next)?;
 
         for child in parent.borrow().children().iter() {
@@ -46,7 +46,7 @@ impl Dispatcher {
             ctx.save();
             ctx.translate(frame.x, frame.y)?;
 
-            self._dispatch_render(Rc::clone(&child), ctx, dpr, next)?;
+            self.visit_render(Rc::clone(&child), ctx, dpr, next)?;
 
             ctx.restore();
         }
@@ -55,18 +55,18 @@ impl Dispatcher {
     }
 
     pub fn dispatch_pointer_down(&mut self, id: i32, x: f64, y: f64) -> Result<(), JsValue> {
-        if let Some(pointing_view) = self._dispatch_pointer_down(Rc::clone(&self.root_view), Point { x, y })? {
+        if let Some(pointing_view) = self.visit_pointer_down(Rc::clone(&self.root_view), Point { x, y })? {
             self.pointing_views.insert(id, pointing_view);
         }
         Ok(())
     }
 
-    fn _dispatch_pointer_down(&mut self, parent: Rc<RefCell<dyn View>>, p: Point) -> Result<Option<Rc<RefCell<dyn View>>>, JsValue> {
+    fn visit_pointer_down(&mut self, parent: Rc<RefCell<dyn View>>, p: Point) -> Result<Option<Rc<RefCell<dyn View>>>, JsValue> {
         for child in parent.borrow().children().iter().rev() {
             let frame = child.borrow().frame();
             let local_p = p - parent.borrow().frame().origin();
 
-            if let Some(pointing_view) = self._dispatch_pointer_down(Rc::clone(&child), local_p)? {
+            if let Some(pointing_view) = self.visit_pointer_down(Rc::clone(&child), local_p)? {
                 return Ok(Some(pointing_view));
             }
 
@@ -89,7 +89,7 @@ impl Dispatcher {
 
     pub fn dispatch_pointer_up(&mut self, id: i32, x: f64, y: f64) -> Result<(), JsValue> {
         if let Some(pointing_view) = self.pointing_views.get(&id) {
-            let p = self._calc_local_point(Rc::clone(&self.root_view), Rc::clone(&pointing_view), Point { x, y });
+            let p = self.calc_local_point(Rc::clone(&self.root_view), Rc::clone(&pointing_view), Point { x, y });
             pointing_view.borrow_mut().pointer_up(p)?;
             self.pointing_views.remove(&id);
         }
@@ -97,7 +97,7 @@ impl Dispatcher {
         Ok(())
     }
 
-    fn _calc_local_point(&self, parent: Rc<RefCell<dyn View>>, target: Rc<RefCell<dyn View>>, p: Point) -> Point {
+    fn calc_local_point(&self, parent: Rc<RefCell<dyn View>>, target: Rc<RefCell<dyn View>>, p: Point) -> Point {
         if Rc::ptr_eq(&parent, &target) {
             return p - parent.borrow().frame().origin();
         }
@@ -109,7 +109,7 @@ impl Dispatcher {
             if Rc::ptr_eq(child, &target) {
                 return local_p - frame.origin();
             } else {
-                return self._calc_local_point(Rc::clone(&child), target, local_p);
+                return self.calc_local_point(Rc::clone(&child), target, local_p);
             }
         }
 
