@@ -1,3 +1,4 @@
+use std::any::{Any};
 use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
@@ -12,7 +13,6 @@ use crate::question::{Question, QuestionEvent, QuestionObserver};
 pub struct Fretboard {
     frame: Rect,
     children: Vec<Rc<RefCell<dyn View>>>,
-    nanjs: Vec<Rc<RefCell<NanJ>>>,
     asset: Rc<Asset>,
     question: Rc<RefCell<Question>>,
 }
@@ -31,11 +31,12 @@ impl View for Fretboard {
         let x_offset = self.frame.width / 13. * 0.15;
         let y_offset = -s * 0.5;
 
-        for rc in self.nanjs.iter() {
-            let mut nanj = rc.borrow_mut();
-            let x = nanj.question_item.fret as f64 * self.frame.width / 13. + x_offset;
-            let y = (nanj.question_item.string - 1) as f64 * self.frame.height / 5. + y_offset;
-            nanj.set_frame(Rect { x, y, width: s, height: s});
+        for child in self.children.iter() {
+            if let Some(nanj) = (&mut *child.borrow_mut() as &mut dyn Any).downcast_mut::<NanJ>() {
+                let x = nanj.question_item.fret as f64 * self.frame.width / 13. + x_offset;
+                let y = (nanj.question_item.string - 1) as f64 * self.frame.height / 5. + y_offset;
+                nanj.set_frame(Rect { x, y, width: s, height: s});
+            }
         }
 
         Ok(())
@@ -109,18 +110,21 @@ impl QuestionObserver for Fretboard {
         if let QuestionEvent::New(question_item) = event {
             let nanj = NanJ::try_new(self.asset.clone(), question_item)?;
             self.children.push(nanj.clone());
-            self.nanjs.push(nanj.clone());
-
-            self.question.borrow_mut().add_observer(nanj.clone());
-
+            self.question.borrow_mut().add_observer(nanj);
             self.layout()?;
         }
 
-        let gone_nanjs: Vec<Rc<RefCell<NanJ>>> = self.nanjs.iter().filter(|n| n.borrow().is_gone()).cloned().collect();
+        let gone_nanjs: Vec<Rc<RefCell<dyn View>>> = self.children.iter().filter(|child| {
+            if let Some(nanj) = (&*child.borrow() as &dyn Any).downcast_ref::<NanJ>() {
+                return nanj.is_gone()
+            } else {
+                false
+            }
+        }).cloned().collect();
+
         for nanj in gone_nanjs.iter() {
-            if let Some(index) = self.nanjs.iter().position(|n| Rc::ptr_eq(n, nanj)) {
+            if let Some(index) = self.children.iter().position(|n| Rc::ptr_eq(n, nanj)) {
                 self.children.remove(index);
-                self.nanjs.remove(index);
             };
         }
 
@@ -131,12 +135,10 @@ impl QuestionObserver for Fretboard {
 impl Fretboard {
     pub fn new(asset: Rc<Asset>, question: Rc<RefCell<Question>>) -> Rc<RefCell<Self>> {
         let children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
-        let nanjs: Vec<Rc<RefCell<NanJ>>> = Vec::new();
 
         Rc::new(RefCell::new(Self {
             frame: Rect::default(),
             children,
-            nanjs,
             asset,
             question,
         }))

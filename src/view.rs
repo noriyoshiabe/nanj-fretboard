@@ -1,3 +1,4 @@
+use std::any::{Any};
 use std::cell::RefCell;
 use std::ops::Sub;
 use std::rc::Rc;
@@ -59,7 +60,7 @@ impl Rect {
     }
 }
 
-pub trait View {
+pub trait View: Any {
     fn frame(&self) -> Rect;
     fn set_frame(&mut self, frame: Rect);
 

@@ -1,3 +1,4 @@
+use std::any::{TypeId};
 use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
@@ -13,9 +14,6 @@ use crate::question::Question;
 pub struct RootView {
     frame: Rect,
     children: Vec<Rc<RefCell<dyn View>>>,
-    accidental: Rc<RefCell<Accidental>>,
-    fretboard: Rc<RefCell<Fretboard>>,
-    keyboard: Rc<RefCell<Keyboard>>,
 }
 
 impl View for RootView {
@@ -58,10 +56,16 @@ impl View for RootView {
         f_acccidental.y = v_space;
         f_fretboard.y = f_acccidental.bottom() + v_space;
         f_keyboard.y = f_fretboard.bottom() + v_space;
-                          
-        self.accidental.borrow_mut().set_frame(f_acccidental);
-        self.fretboard.borrow_mut().set_frame(f_fretboard);
-        self.keyboard.borrow_mut().set_frame(f_keyboard);
+
+        for child in self.children.iter() {
+            if child.borrow().type_id() == TypeId::of::<Accidental>() {
+                child.borrow_mut().set_frame(f_acccidental);
+            } else if child.borrow().type_id() == TypeId::of::<Fretboard>() {
+                child.borrow_mut().set_frame(f_fretboard);
+            } else if child.borrow().type_id() == TypeId::of::<Keyboard>() {
+                child.borrow_mut().set_frame(f_keyboard);
+            }
+        }
 
         Ok(())
     }
@@ -95,9 +99,6 @@ impl RootView {
         Rc::new(RefCell::new(Self {
             frame: Rect::default(),
             children,
-            accidental,
-            fretboard,
-            keyboard,
         }))
     }
 }

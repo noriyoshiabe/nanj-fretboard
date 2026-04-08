@@ -10,8 +10,6 @@ use crate::question::Question;
 pub struct Keyboard {
     frame: Rect,
     children: Vec<Rc<RefCell<dyn View>>>,
-    normal_pads: Vec<Rc<RefCell<NotePad>>>,
-    accidental_pads: Vec<Rc<RefCell<NotePad>>>,
 }
 
 impl View for Keyboard {
@@ -26,13 +24,13 @@ impl View for Keyboard {
     fn layout(&mut self) -> Result<(), JsValue> {
         let s = self.frame.width / 14. * 2.;
 
-        for (i, note_pad) in self.normal_pads.iter().enumerate() {
+        for (i, note_pad) in self.children[0..7].iter().enumerate() {
             let x = (i as f64 * 2.) * self.frame.width / 14.;
             let y = s * 0.9;
             note_pad.borrow_mut().set_frame(Rect { x, y, width: s, height: s});
         }
 
-        for (i, note_pad) in self.accidental_pads.iter().enumerate() {
+        for (i, note_pad) in self.children[7..12].iter().enumerate() {
             let x = if i < 2 {
                 (i as f64 * 2. + 1.) * self.frame.width / 14.
             } else {
@@ -53,44 +51,20 @@ impl View for Keyboard {
 impl Keyboard {
     pub fn new(question: Rc<RefCell<Question>>) -> Rc<RefCell<Self>> {
         let mut children: Vec<Rc<RefCell<dyn View>>> = Vec::new();
-        let mut normal_pads: Vec<Rc<RefCell<NotePad>>> = Vec::new();
-        let mut accidental_pads: Vec<Rc<RefCell<NotePad>>> = Vec::new();
 
-        let notes = [
-            "C",
-            "D",
-            "E",
-            "F",
-            "G",
-            "A",
-            "B",
-        ];
-
+        let notes = ["C", "D", "E", "F", "G", "A", "B"];
         for note in notes {
-            let note_pad = NotePad::new(question.clone(), note.to_string(), false);
-            normal_pads.push(note_pad.clone());
-            children.push(note_pad);
+            children.push(NotePad::new(question.clone(), note.to_string(), false));
         }
 
-        let notes = [
-            "C#",
-            "D#",
-            "F#",
-            "G#",
-            "A#",
-        ];
-
+        let notes = ["C#", "D#", "F#", "G#", "A#"];
         for note in notes {
-            let note_pad = NotePad::new(question.clone(), note.to_string(), true);
-            accidental_pads.push(note_pad.clone());
-            children.push(note_pad);
+            children.push(NotePad::new(question.clone(), note.to_string(), true));
         }
 
         Rc::new(RefCell::new(Self {
             frame: Rect::default(),
             children,
-            normal_pads,
-            accidental_pads,
         }))
     }
 }
